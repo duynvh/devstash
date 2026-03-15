@@ -1,30 +1,19 @@
 import { Star, Pin } from 'lucide-react';
 import { ITEM_TYPES } from '@/lib/constants/item-types';
-import { mockItemTypes } from '@/lib/mock-data';
-import type { ElementType } from 'react';
-
-interface Item {
-  id: string;
-  title: string;
-  description: string | null;
-  isFavorite: boolean;
-  isPinned: boolean;
-  itemTypeId: string;
-  createdAt: Date;
-}
+import type { ItemWithType } from '@/lib/db/items';
 
 interface ItemRowProps {
-  item: Item;
+  item: ItemWithType;
 }
 
-function getItemType(itemTypeId: string): { icon: ElementType; color: string } {
-  const mockType = mockItemTypes.find((t) => t.id === itemTypeId);
-  const matched = ITEM_TYPES.find((t) => t.key === (mockType?.name ?? '') + 's');
-  return matched ?? { icon: ITEM_TYPES[0].icon, color: ITEM_TYPES[0].color };
+function getIconAndColor(typeName: string, typeColor: string) {
+  const matched = ITEM_TYPES.find((t) => t.key === typeName.toLowerCase() + 's');
+  return { icon: matched?.icon ?? ITEM_TYPES[0].icon, color: typeColor };
 }
 
 export default function ItemRow({ item }: ItemRowProps) {
-  const { icon: Icon, color } = getItemType(item.itemTypeId);
+  const { icon: Icon, color } = getIconAndColor(item.itemType.name, item.itemType.color);
+
   return (
     <div className="flex items-center gap-3 px-4 py-3 bg-card hover:bg-muted/30 transition-colors cursor-pointer">
       <div
@@ -37,6 +26,18 @@ export default function ItemRow({ item }: ItemRowProps) {
         <p className="text-sm font-medium text-foreground truncate">{item.title}</p>
         {item.description && (
           <p className="text-xs text-muted-foreground truncate">{item.description}</p>
+        )}
+        {item.tags.length > 0 && (
+          <div className="flex items-center gap-1 mt-1 flex-wrap">
+            {item.tags.slice(0, 3).map((tag) => (
+              <span
+                key={tag.name}
+                className="text-[10px] px-1.5 py-0.5 rounded-sm bg-muted text-muted-foreground"
+              >
+                {tag.name}
+              </span>
+            ))}
+          </div>
         )}
       </div>
       <div className="flex items-center gap-2 shrink-0">
