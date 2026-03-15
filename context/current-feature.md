@@ -22,3 +22,4 @@ Not Started
 
 - Project setup and boilerplate cleanup
 - Initial Next.js setup
+- Dashboard Phase 1: ShadCN init, /dashboard route, dark mode layout, top bar with search and action buttons, sidebar/main placeholders, responsive fixes
