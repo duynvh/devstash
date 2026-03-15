@@ -1,11 +1,36 @@
-import { Search, Plus, FolderPlus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+'use client';
 
-export default function TopBar() {
+import { Search, Plus, FolderPlus, PanelLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+
+interface TopBarProps {
+  onMenuClick: () => void;
+  onCollapseClick: () => void;
+}
+
+export default function TopBar({ onMenuClick, onCollapseClick }: TopBarProps) {
   return (
     <header className="flex items-center h-14 px-4 border-b border-border shrink-0 gap-3">
       <div className="flex items-center gap-2 shrink-0">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="lg:hidden size-8"
+          onClick={onMenuClick}
+          aria-label="Open menu"
+        >
+          <PanelLeft className="size-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hidden lg:flex size-8"
+          onClick={onCollapseClick}
+          aria-label="Toggle sidebar"
+        >
+          <PanelLeft className="size-4" />
+        </Button>
         <div className="size-7 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
           D
         </div>
@@ -41,4 +66,3 @@ export default function TopBar() {
     </header>
   );
 }
-
