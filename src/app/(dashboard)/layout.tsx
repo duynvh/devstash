@@ -1,31 +1,23 @@
-'use client';
+import { prisma } from '@/lib/prisma';
+import { getSidebarCollections } from '@/lib/db/collections';
+import { getItemTypeCounts } from '@/lib/db/items';
+import { ClientShell } from './layout.client';
 
-import TopBar from '@/components/layout/TopBar';
-import Sidebar from '@/components/layout/Sidebar';
-import SidebarDrawer from '@/components/layout/SidebarDrawer';
-import { SidebarProvider, useSidebarContext } from '@/components/layout/SidebarProvider';
+const DEMO_USER_EMAIL = 'demo@devstash.io';
 
-function DashboardShell({ children }: { children: React.ReactNode }) {
-  const { isOpen, toggle, isMobileOpen, toggleMobile, closeMobile } = useSidebarContext();
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const user = await prisma.user.findUnique({ where: { email: DEMO_USER_EMAIL } });
+
+  const [itemTypeCounts, sidebarCollections] = user
+    ? await Promise.all([getItemTypeCounts(user.id), getSidebarCollections(user.id)])
+    : [
+        {} as Record<string, number>,
+        { favorites: [], recents: [] } as Awaited<ReturnType<typeof getSidebarCollections>>,
+      ];
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
-      <TopBar onMenuClick={toggleMobile} onCollapseClick={toggle} />
-      <div className="flex flex-1 overflow-hidden">
-        <div className="hidden lg:flex shrink-0">
-          <Sidebar isCollapsed={!isOpen} />
-        </div>
-        <SidebarDrawer isOpen={isMobileOpen} onClose={closeMobile} />
-        <main className="flex-1 overflow-auto">{children}</main>
-      </div>
-    </div>
-  );
-}
-
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <SidebarProvider>
-      <DashboardShell>{children}</DashboardShell>
-    </SidebarProvider>
+    <ClientShell itemTypeCounts={itemTypeCounts} sidebarCollections={sidebarCollections}>
+      {children}
+    </ClientShell>
   );
 }

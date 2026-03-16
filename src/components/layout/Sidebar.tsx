@@ -5,18 +5,18 @@ import { usePathname } from 'next/navigation';
 import { Star, FolderOpen, ChevronDown, ChevronRight, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ITEM_TYPES } from '@/lib/constants/item-types';
-import { mockCollections, mockItemTypeCounts, mockUser } from '@/lib/mock-data';
+import { mockUser } from '@/lib/mock-data';
 import { useState } from 'react';
+import type { SidebarCollection } from '@/lib/db/collections';
 
 interface SidebarProps {
   isCollapsed: boolean;
   onClose?: () => void;
+  itemTypeCounts: Record<string, number>;
+  sidebarCollections: { favorites: SidebarCollection[]; recents: SidebarCollection[] };
 }
 
-const favoriteCollections = mockCollections.filter((c) => c.isFavorite);
-const recentCollections = mockCollections.filter((c) => !c.isFavorite).slice(0, 3);
-
-export default function Sidebar({ isCollapsed, onClose }: SidebarProps) {
+export default function Sidebar({ isCollapsed, onClose, itemTypeCounts, sidebarCollections }: SidebarProps) {
   const pathname = usePathname();
   const [typesOpen, setTypesOpen] = useState(true);
   const [collectionsOpen, setCollectionsOpen] = useState(true);
@@ -41,8 +41,8 @@ export default function Sidebar({ isCollapsed, onClose }: SidebarProps) {
             {ITEM_TYPES.map((type) => {
               const Icon = type.icon;
               const href = `/items/${type.key}`;
-              const countKey = type.key.replace(/s$/, '') as keyof typeof mockItemTypeCounts;
-              const count = mockItemTypeCounts[countKey];
+              const typeName = type.key.replace(/s$/, '');
+              const count = itemTypeCounts[typeName] ?? 0;
               const active = pathname === href;
 
               return (
@@ -89,15 +89,22 @@ export default function Sidebar({ isCollapsed, onClose }: SidebarProps) {
               <div className="space-y-3 pt-1">
                 <CollectionGroup
                   label="Favorites"
-                  collections={favoriteCollections}
+                  collections={sidebarCollections.favorites}
                   showStar
                   onClose={onClose}
                 />
                 <CollectionGroup
                   label="Recent"
-                  collections={recentCollections}
+                  collections={sidebarCollections.recents}
                   onClose={onClose}
                 />
+                <Link
+                  href="/collections"
+                  onClick={onClose}
+                  className="block px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  View all collections →
+                </Link>
               </div>
             )}
           </>
@@ -158,10 +165,11 @@ function CollectionGroup({
   onClose,
 }: {
   label: string;
-  collections: typeof mockCollections;
+  collections: SidebarCollection[];
   showStar?: boolean;
   onClose?: () => void;
 }) {
+  if (collections.length === 0) return null;
   return (
     <div>
       <p className="px-2 mb-1 text-[10px] uppercase tracking-wider text-muted-foreground/70 font-medium">
@@ -175,7 +183,14 @@ function CollectionGroup({
             onClick={onClose}
             className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground transition-colors group"
           >
-            <FolderOpen className="size-3.5 shrink-0 text-muted-foreground" />
+            {showStar ? (
+              <FolderOpen className="size-3.5 shrink-0 text-muted-foreground" />
+            ) : (
+              <span
+                className="size-3 rounded-full shrink-0"
+                style={{ backgroundColor: col.dominantColor }}
+              />
+            )}
             <span className="flex-1 truncate">{col.name}</span>
             {showStar && <Star className="size-3 fill-yellow-400 text-yellow-400 shrink-0" />}
             {!showStar && (

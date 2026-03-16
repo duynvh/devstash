@@ -37,3 +37,20 @@ export async function getRecentItems(userId: string, limit = 10): Promise<ItemWi
     },
   });
 }
+
+export async function getItemTypeCounts(userId: string): Promise<Record<string, number>> {
+  const groups = await prisma.item.groupBy({
+    by: ['itemTypeId'],
+    where: { userId },
+    _count: { _all: true },
+  });
+
+  const typeIds = groups.map((g) => g.itemTypeId);
+  const types = await prisma.itemType.findMany({
+    where: { id: { in: typeIds } },
+    select: { id: true, name: true },
+  });
+
+  const nameById = Object.fromEntries(types.map((t) => [t.id, t.name]));
+  return Object.fromEntries(groups.map((g) => [nameById[g.itemTypeId], g._count._all]));
+}
