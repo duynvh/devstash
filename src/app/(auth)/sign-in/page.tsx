@@ -11,12 +11,16 @@ const URL_ERRORS: Record<string, string> = {
   'missing-token': 'Verification token missing.',
 };
 
+const URL_SUCCESS: Record<string, string> = {
+  success: 'Password reset successfully. You can now sign in.',
+};
+
 interface SignInPageProps {
-  searchParams: Promise<{ registered?: string; error?: string }>;
+  searchParams: Promise<{ registered?: string; error?: string; reset?: string }>;
 }
 
 export default async function SignInPage({ searchParams }: SignInPageProps) {
-  const { registered, error } = await searchParams;
+  const { registered, error, reset } = await searchParams;
 
   return (
     <>
@@ -27,6 +31,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
       <SignInForm
         registered={registered}
         urlError={error ? (URL_ERRORS[error] ?? null) : null}
+        urlSuccess={reset ? (URL_SUCCESS[reset] ?? null) : null}
       />
     </>
   );

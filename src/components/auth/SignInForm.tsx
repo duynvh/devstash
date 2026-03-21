@@ -13,6 +13,7 @@ const initialState: AuthFormState = {};
 interface SignInFormProps {
   registered?: string;
   urlError?: string | null;
+  urlSuccess?: string | null;
 }
 
 const REGISTERED_MESSAGES: Record<string, string> = {
@@ -20,7 +21,7 @@ const REGISTERED_MESSAGES: Record<string, string> = {
   ready: 'Account created! You can now sign in.',
 };
 
-export default function SignInForm({ registered, urlError }: SignInFormProps) {
+export default function SignInForm({ registered, urlError, urlSuccess }: SignInFormProps) {
   const [state, action, isPending] = useActionState(signInWithCredentials, initialState);
   const registeredMessage = registered ? REGISTERED_MESSAGES[registered] : null;
 
@@ -34,6 +35,10 @@ export default function SignInForm({ registered, urlError }: SignInFormProps) {
 
       {urlError && (
         <p className="text-sm text-center text-destructive">{urlError}</p>
+      )}
+
+      {urlSuccess && (
+        <p className="text-sm text-center text-emerald-400">{urlSuccess}</p>
       )}
 
       <form action={action} className="space-y-4">
@@ -52,9 +57,17 @@ export default function SignInForm({ registered, urlError }: SignInFormProps) {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="password" className="text-sm font-medium text-foreground">
-            Password
-          </label>
+          <div className="flex items-center justify-between">
+            <label htmlFor="password" className="text-sm font-medium text-foreground">
+              Password
+            </label>
+            <Link
+              href="/forgot-password"
+              className="text-xs text-muted-foreground hover:text-primary transition-colors"
+            >
+              Forgot password?
+            </Link>
+          </div>
           <Input
             id="password"
             name="password"

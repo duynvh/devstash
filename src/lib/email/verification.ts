@@ -3,11 +3,14 @@ import { prisma } from '@/lib/prisma';
 
 const BASE_URL = process.env.NEXTAUTH_URL ?? 'http://localhost:3000';
 const FROM = 'onboarding@resend.dev';
-const EXPIRES_IN_MS = 24 * 60 * 60 * 1000;
+export const VERIFICATION_EXPIRES_MS = 24 * 60 * 60 * 1000;
 
-export async function createVerificationToken(email: string): Promise<string> {
+export async function createVerificationToken(
+  email: string,
+  expiresInMs = VERIFICATION_EXPIRES_MS
+): Promise<string> {
   const token = crypto.randomUUID();
-  const expires = new Date(Date.now() + EXPIRES_IN_MS);
+  const expires = new Date(Date.now() + expiresInMs);
 
   await prisma.verificationToken.deleteMany({ where: { identifier: email } });
 
