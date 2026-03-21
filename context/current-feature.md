@@ -1,28 +1,12 @@
-# Current Feature: Forgot Password
+# Current Feature
 
 ## Status
 
-In Progress
+Not Started
 
 ## Goals
 
-- Add a "Forgot password?" link on the sign-in page that navigates to `/forgot-password`
-- Create `/forgot-password` page with email input form — sends a password reset email using Resend
-- Reuse the existing `VerificationToken` model to store password reset tokens (with `identifier` = email)
-- Create `/reset-password` page that accepts a token from the email link, lets users set a new password
-- Create `POST /api/auth/forgot-password` route — validates email exists, creates reset token, sends email
-- Create `POST /api/auth/reset-password` route — validates token, updates password hash, deletes token
-- Respect the `EMAIL_VERIFICATION_ENABLED` toggle — if disabled, skip the forgot password flow gracefully
-- Handle edge cases: expired tokens, invalid tokens, non-existent emails (show generic message for security)
-
 ## Notes
-
-- Reuse `createVerificationToken` from `src/lib/email/verification.ts` for token generation
-- Add a new `sendPasswordResetEmail` function in `src/lib/email/password-reset.ts`
-- Password reset tokens should expire in 1 hour (shorter than 24h verification tokens)
-- For security: always show a generic success message regardless of whether email exists
-- New pages follow the existing `(auth)` layout
-- New password requires minimum 8 characters + confirmation field (same as register)
 
 ## History
 
@@ -41,4 +25,5 @@ In Progress
 - Auth Phase 2: Credentials provider (email/password) — auth.config.ts placeholder, auth.ts with bcrypt validation via authorizeCredentials helper, /api/auth/register POST route, Vitest setup with 11 unit tests (register route + authorize logic)
 - Auth Phase 3: Custom /sign-in page (email/password + GitHub OAuth), custom /register page (name/email/password/confirm + validation), reusable UserAvatar component (image or initials fallback), SidebarUser dropdown (profile link + sign-out), real session user wired into dashboard layout and sidebar
 - Email Verification on Register: Resend integration (src/lib/email/) for verification emails, GET /api/auth/verify-email route validates token and sets emailVerified, credentials sign-in blocked for unverified users with user-friendly error, sign-in page handles token error URL params, register success message updated to prompt email check, scripts/delete-all-users.ts added with confirmation prompt
-- Email Verification Toggle: EMAIL_VERIFICATION_ENABLED env variable (defaults true), when false skips sending verification email, auto-sets emailVerified on register, bypasses verification check on sign-in, registration success message adapts ("check your email" vs "you can now sign in"), centralized flag in src/lib/constants/auth.ts, 12 tests passing
+- Email Verification Toggle: EMAIL_VERIFICATION_ENABLED env variable (defaults true), when false skips sending verification email, auto-sets emailVerified on register, bypasses verification check on sign-in, registration success message adapts ("check your email" vs "you can now sign in"), centralized flag in src/lib/constants/auth.ts, 12 tests passing
+- Forgot Password: "Forgot password?" link on sign-in page, /forgot-password page with email form, /reset-password page with token-based new password form, POST /api/auth/forgot-password and POST /api/auth/reset-password routes, reuses VerificationToken model with 1-hour expiry, sendPasswordResetEmail via Resend, generic success messages for security, createVerificationToken refactored with configurable expiry, reset=success message on sign-in page
