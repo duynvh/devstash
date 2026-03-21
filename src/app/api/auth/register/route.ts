@@ -1,10 +1,15 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { sendVerificationEmail } from '@/lib/email/verification';
 import { EMAIL_VERIFICATION_ENABLED } from '@/lib/constants/auth';
+import { rateLimiters, getIP, checkRateLimit, rateLimitResponse } from '@/lib/rate-limit';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const ip = getIP(request);
+  const rl = await checkRateLimit(rateLimiters.register, ip);
+  if (!rl.success) return rateLimitResponse(rl.reset);
+
   try {
     const body = await request.json();
     const { name, email, password, confirmPassword } = body;
@@ -46,4 +51,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-

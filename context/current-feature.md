@@ -2,11 +2,34 @@
 
 ## Status
 
-Not Started
+In Progress — Build passing, ready to commit
 
 ## Goals
 
+- Add rate limiting to auth-related API routes using Upstash Redis + `@upstash/ratelimit`
+- Create reusable `src/lib/rate-limit.ts` utility
+- Return 429 responses with `Retry-After` header and user-friendly JSON error
+- Display error messages via toast notification on the frontend
+- Rate limiting must fail open (allow request) if Upstash is unavailable
+
 ## Notes
+
+Endpoints to protect:
+
+| Endpoint | Limit | Window | Key By |
+|----------|-------|--------|--------|
+| `/api/auth/callback/credentials` (login) | 5 attempts | 15 min | IP + email |
+| `/api/auth/register` | 3 attempts | 1 hour | IP |
+| `/api/auth/forgot-password` | 3 attempts | 1 hour | IP |
+| `/api/auth/reset-password` | 5 attempts | 15 min | IP |
+| `/api/auth/resend-verification` | 3 attempts | 15 min | IP + email |
+
+- Use sliding window algorithm
+- Extract IP from `x-forwarded-for` header (Vercel) or request
+- Combine IP + email where applicable for tighter limits
+- Login limiting with NextAuth credentials is tricky — may need custom sign-in handler
+- New env vars required: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`
+- Upstash free tier: 10k requests/day — sufficient for auth limiting
 
 ## History
 
@@ -28,4 +51,3 @@ Not Started
 - Email Verification Toggle: EMAIL_VERIFICATION_ENABLED env variable (defaults true), when false skips sending verification email, auto-sets emailVerified on register, bypasses verification check on sign-in, registration success message adapts ("check your email" vs "you can now sign in"), centralized flag in src/lib/constants/auth.ts, 12 tests passing
 - Forgot Password: "Forgot password?" link on sign-in page, /forgot-password page with email form, /reset-password page with token-based new password form, POST /api/auth/forgot-password and POST /api/auth/reset-password routes, reuses VerificationToken model with 1-hour expiry, sendPasswordResetEmail via Resend, generic success messages for security, createVerificationToken refactored with configurable expiry, reset=success message on sign-in page
 - Profile Page: /profile route (auth-protected via proxy matcher), ProfileHeader with avatar (GitHub image or initials fallback) + name + email + join date, ProfileStats with total items/collections + per-type breakdown using getItemTypeIcon, ChangePasswordForm (email/password users only via hasPassword flag) with bcrypt validation, DeleteAccountSection with inline confirmation + cascading Prisma delete + sign-out, server actions in src/actions/profile.ts, data fetching in src/lib/db/profile.ts
-

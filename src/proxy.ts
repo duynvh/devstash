@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth';
 import { authConfig } from './auth.config';
 
-export const { auth: proxy } = NextAuth({
+const { auth } = NextAuth({
   ...authConfig,
   callbacks: {
     authorized({ auth }) {
@@ -10,7 +10,8 @@ export const { auth: proxy } = NextAuth({
   },
 });
 
+export default auth;
+
 export const config = {
   matcher: ['/dashboard/:path*', '/profile/:path*'],
 };
-
