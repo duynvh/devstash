@@ -1,22 +1,16 @@
-# Current Feature: Add Pro Badge to Sidebar
+# Current Feature
 
 ## Status
 
-In Progress (Implementation Complete — pending /feature complete)
+Not Started
 
 ## Goals
 
-- Add a PRO badge to the **Files** item type in the sidebar
-- Add a PRO badge to the **Images** item type in the sidebar
-- Use the ShadCN UI `Badge` component for the badge
-- Badge must be clean and subtle (no loud colors or heavy styling)
-- Badge label must be uppercase: **PRO**
+<!-- Add goals here -->
 
 ## Notes
 
-- Source spec: `context/features/add-pro-badge-sidebar.md`
-- Only the Files and Images item types require the badge — not all types
-- Keep the sidebar layout intact; badge should not break alignment or spacing
+<!-- Add notes here -->
 
 ## History
 
@@ -30,3 +24,4 @@ In Progress (Implementation Complete — pending /feature complete)
 - Dashboard Collections: src/lib/db/collections.ts with Prisma data fetching, RecentCollections updated with dominant-color borders + per-type icons, dashboard page converted to async SSR with real DB data for collections and stats
 - Dashboard Items: src/lib/db/items.ts with getPinnedItems/getRecentItems, ItemRow updated to use real itemType data with tag pills, dashboard page replaced mock items with real DB fetches
 - Stats & Sidebar: Real item type counts in sidebar via getItemTypeCounts, real sidebar collections (favorites + recents with dominant color dot) via getSidebarCollections, "View all collections →" link added, layout refactored to server component for SSR data fetching
+- Add Pro Badge to Sidebar: Added isPro: true to Files and Images in ITEM_TYPES, added ShadCN Badge component with subtle outline styling shown inline next to PRO-gated type labels in the sidebar
