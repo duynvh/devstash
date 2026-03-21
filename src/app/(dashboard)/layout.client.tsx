@@ -6,13 +6,20 @@ import SidebarDrawer from '@/components/layout/SidebarDrawer';
 import { SidebarProvider, useSidebarContext } from '@/components/layout/SidebarProvider';
 import type { SidebarCollection } from '@/lib/db/collections';
 
+interface SessionUser {
+  name: string;
+  email: string;
+  image?: string | null;
+}
+
 interface ClientShellProps {
   children: React.ReactNode;
   itemTypeCounts: Record<string, number>;
   sidebarCollections: { favorites: SidebarCollection[]; recents: SidebarCollection[] };
+  sessionUser: SessionUser;
 }
 
-function DashboardShell({ children, itemTypeCounts, sidebarCollections }: ClientShellProps) {
+function DashboardShell({ children, itemTypeCounts, sidebarCollections, sessionUser }: ClientShellProps) {
   const { isOpen, toggle, isMobileOpen, toggleMobile, closeMobile } = useSidebarContext();
 
   return (
@@ -24,6 +31,7 @@ function DashboardShell({ children, itemTypeCounts, sidebarCollections }: Client
             isCollapsed={!isOpen}
             itemTypeCounts={itemTypeCounts}
             sidebarCollections={sidebarCollections}
+            sessionUser={sessionUser}
           />
         </div>
         <SidebarDrawer
@@ -31,6 +39,7 @@ function DashboardShell({ children, itemTypeCounts, sidebarCollections }: Client
           onClose={closeMobile}
           itemTypeCounts={itemTypeCounts}
           sidebarCollections={sidebarCollections}
+          sessionUser={sessionUser}
         />
         <main className="flex-1 overflow-auto">{children}</main>
       </div>
@@ -38,12 +47,13 @@ function DashboardShell({ children, itemTypeCounts, sidebarCollections }: Client
   );
 }
 
-export function ClientShell({ children, itemTypeCounts, sidebarCollections }: ClientShellProps) {
+export function ClientShell({ children, itemTypeCounts, sidebarCollections, sessionUser }: ClientShellProps) {
   return (
     <SidebarProvider>
       <DashboardShell
         itemTypeCounts={itemTypeCounts}
         sidebarCollections={sidebarCollections}
+        sessionUser={sessionUser}
       >
         {children}
       </DashboardShell>

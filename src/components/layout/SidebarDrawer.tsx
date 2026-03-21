@@ -3,14 +3,21 @@
 import Sidebar from './Sidebar';
 import type { SidebarCollection } from '@/lib/db/collections';
 
+interface SessionUser {
+  name: string;
+  email: string;
+  image?: string | null;
+}
+
 interface SidebarDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   itemTypeCounts: Record<string, number>;
   sidebarCollections: { favorites: SidebarCollection[]; recents: SidebarCollection[] };
+  sessionUser: SessionUser;
 }
 
-export default function SidebarDrawer({ isOpen, onClose, itemTypeCounts, sidebarCollections }: SidebarDrawerProps) {
+export default function SidebarDrawer({ isOpen, onClose, itemTypeCounts, sidebarCollections, sessionUser }: SidebarDrawerProps) {
   return (
     <>
       {isOpen && (
@@ -30,6 +37,7 @@ export default function SidebarDrawer({ isOpen, onClose, itemTypeCounts, sidebar
           onClose={onClose}
           itemTypeCounts={itemTypeCounts}
           sidebarCollections={sidebarCollections}
+          sessionUser={sessionUser}
         />
       </div>
     </>

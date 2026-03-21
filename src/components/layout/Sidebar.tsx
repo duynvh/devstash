@@ -2,22 +2,29 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Star, FolderOpen, ChevronDown, ChevronRight, Settings } from 'lucide-react';
+import { Star, FolderOpen, ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ITEM_TYPES } from '@/lib/constants/item-types';
-import { mockUser } from '@/lib/mock-data';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import SidebarUser from '@/components/layout/SidebarUser';
 import type { SidebarCollection } from '@/lib/db/collections';
+
+interface SessionUser {
+  name: string;
+  email: string;
+  image?: string | null;
+}
 
 interface SidebarProps {
   isCollapsed: boolean;
   onClose?: () => void;
   itemTypeCounts: Record<string, number>;
   sidebarCollections: { favorites: SidebarCollection[]; recents: SidebarCollection[] };
+  sessionUser: SessionUser;
 }
 
-export default function Sidebar({ isCollapsed, onClose, itemTypeCounts, sidebarCollections }: SidebarProps) {
+export default function Sidebar({ isCollapsed, onClose, itemTypeCounts, sidebarCollections, sessionUser }: SidebarProps) {
   const pathname = usePathname();
   const [typesOpen, setTypesOpen] = useState(true);
   const [collectionsOpen, setCollectionsOpen] = useState(true);
@@ -121,21 +128,12 @@ export default function Sidebar({ isCollapsed, onClose, itemTypeCounts, sidebarC
         'border-t border-sidebar-border p-2 shrink-0',
         isCollapsed ? 'flex justify-center' : ''
       )}>
-        <div className={cn(
-          'flex items-center gap-2.5 px-2 py-1.5 rounded-md hover:bg-sidebar-accent/60 cursor-pointer transition-colors',
-          isCollapsed && 'justify-center px-1'
-        )}>
-          <div className="size-7 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-semibold shrink-0">
-            {mockUser.name.charAt(0)}
-          </div>
-          {!isCollapsed && (
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-sidebar-foreground truncate">{mockUser.name}</p>
-              <p className="text-xs text-muted-foreground truncate">{mockUser.email}</p>
-            </div>
-          )}
-          {!isCollapsed && <Settings className="size-3.5 text-muted-foreground shrink-0" />}
-        </div>
+        <SidebarUser
+          name={sessionUser.name}
+          email={sessionUser.email}
+          image={sessionUser.image}
+          isCollapsed={isCollapsed}
+        />
       </div>
     </aside>
   );
