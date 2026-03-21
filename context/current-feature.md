@@ -1,30 +1,12 @@
-# Current Feature: Auth Setup - NextAuth + GitHub Provider
+# Current Feature
 
 ## Status
 
-In Progress
+Not Started
 
 ## Goals
 
-- Install `next-auth@beta` and `@auth/prisma-adapter`
-- Set up the split auth config pattern for edge compatibility (`auth.config.ts` + `auth.ts`)
-- Add GitHub OAuth provider
-- Protect `/dashboard/*` routes via `src/proxy.ts` with redirect to sign-in for unauthenticated users
-- Export route handlers from `src/app/api/auth/[...nextauth]/route.ts`
-- Extend the `Session` type with `user.id` via `src/types/next-auth.d.ts`
-- Verify end-to-end: `/dashboard` redirects → GitHub sign-in → redirects back
-
 ## Notes
-
-- Use `next-auth@beta` — NOT `@latest` (that installs v4)
-- Proxy file must be at `src/proxy.ts` (same level as `app/`), named export only: `export const proxy = auth(...)`
-- Use `session: { strategy: 'jwt' }` with the split config pattern
-- Do NOT set custom `pages.signIn` — use NextAuth's default page
-- Use Context7 to verify the newest config and conventions before implementing
-- Env vars needed: `AUTH_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`
-- References:
-  - Edge compatibility: https://authjs.dev/getting-started/installation#edge-compatibility
-  - Prisma adapter: https://authjs.dev/getting-started/adapters/prisma
 
 ## History
 
@@ -39,3 +21,4 @@ In Progress
 - Dashboard Items: src/lib/db/items.ts with getPinnedItems/getRecentItems, ItemRow updated to use real itemType data with tag pills, dashboard page replaced mock items with real DB fetches
 - Stats & Sidebar: Real item type counts in sidebar via getItemTypeCounts, real sidebar collections (favorites + recents with dominant color dot) via getSidebarCollections, "View all collections →" link added, layout refactored to server component for SSR data fetching
 - Code Scan Quick Wins: N+1 fix in getRecentCollections/getSidebarCollections (_count + take limits), unbounded getPinnedItems capped at 10, DEMO_USER_EMAIL centralized to src/lib/constants/demo.ts, shared getItemTypeIcon utility extracted to item-types.ts (removed duplicate logic from ItemRow + RecentCollections), dead mock exports removed from mock-data.ts
+- Auth Phase 1: NextAuth v5 (next-auth@beta) + GitHub OAuth — split auth config pattern (auth.config.ts edge-safe + auth.ts with Prisma adapter + JWT), route handlers at /api/auth/[...nextauth], proxy at src/proxy.ts protecting /dashboard/*, Session extended with user.id
