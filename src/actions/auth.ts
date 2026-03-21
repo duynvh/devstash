@@ -21,6 +21,10 @@ export async function signInWithCredentials(
     await signIn('credentials', { email, password, redirectTo: '/dashboard' });
   } catch (err) {
     if (err instanceof AuthError) {
+      const cause = (err.cause as { err?: Error } | undefined)?.err;
+      if (cause?.message === 'EMAIL_NOT_VERIFIED') {
+        return { error: 'Please verify your email before signing in. Check your inbox.' };
+      }
       return { error: 'Invalid email or password.' };
     }
     throw err;
