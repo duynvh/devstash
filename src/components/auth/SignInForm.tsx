@@ -10,15 +10,24 @@ import type { AuthFormState } from '@/actions/auth';
 
 const initialState: AuthFormState = {};
 
-export default function SignInForm({ registered }: { registered?: boolean }) {
+interface SignInFormProps {
+  registered?: boolean;
+  urlError?: string | null;
+}
+
+export default function SignInForm({ registered, urlError }: SignInFormProps) {
   const [state, action, isPending] = useActionState(signInWithCredentials, initialState);
 
   return (
     <div className="space-y-6">
       {registered && (
         <p className="text-sm text-center text-emerald-400">
-          Account created! Sign in below.
+          Account created! Check your email to verify your account.
         </p>
+      )}
+
+      {urlError && (
+        <p className="text-sm text-center text-destructive">{urlError}</p>
       )}
 
       <form action={action} className="space-y-4">

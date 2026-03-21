@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
+import { sendVerificationEmail } from '@/lib/email/verification';
 
 export async function POST(request: Request) {
   try {
@@ -27,8 +28,11 @@ export async function POST(request: Request) {
       select: { id: true, name: true, email: true },
     });
 
+    await sendVerificationEmail(email, name);
+
     return NextResponse.json({ success: true, user }, { status: 201 });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
