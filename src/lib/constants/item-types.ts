@@ -20,3 +20,7 @@ export const ITEM_TYPES = [
 
 export type ItemTypeKey = (typeof ITEM_TYPES)[number]['key'];
 
+export function getItemTypeIcon(typeName: string) {
+  return ITEM_TYPES.find((t) => t.key === `${typeName.toLowerCase()}s`)?.icon ?? null;
+}
+

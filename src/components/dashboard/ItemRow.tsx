@@ -1,18 +1,14 @@
 import { Star, Pin } from 'lucide-react';
-import { ITEM_TYPES } from '@/lib/constants/item-types';
+import { ITEM_TYPES, getItemTypeIcon } from '@/lib/constants/item-types';
 import type { ItemWithType } from '@/lib/db/items';
 
 interface ItemRowProps {
   item: ItemWithType;
 }
 
-function getIconAndColor(typeName: string, typeColor: string) {
-  const matched = ITEM_TYPES.find((t) => t.key === typeName.toLowerCase() + 's');
-  return { icon: matched?.icon ?? ITEM_TYPES[0].icon, color: typeColor };
-}
-
 export default function ItemRow({ item }: ItemRowProps) {
-  const { icon: Icon, color } = getIconAndColor(item.itemType.name, item.itemType.color);
+  const Icon = getItemTypeIcon(item.itemType.name) ?? ITEM_TYPES[0].icon;
+  const color = item.itemType.color;
 
   return (
     <div className="flex items-center gap-3 px-4 py-3 bg-card hover:bg-muted/30 transition-colors cursor-pointer">

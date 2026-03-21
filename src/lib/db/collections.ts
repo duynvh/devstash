@@ -31,10 +31,12 @@ export async function getRecentCollections(userId: string, limit = 6): Promise<C
     orderBy: { updatedAt: 'desc' },
     take: limit,
     include: {
+      _count: { select: { items: true } },
       items: {
+        take: 20,
         include: {
           item: {
-            include: { itemType: true },
+            select: { itemType: { select: { id: true, name: true, icon: true, color: true } } },
           },
         },
       },
@@ -62,7 +64,7 @@ export async function getRecentCollections(userId: string, limit = 6): Promise<C
       name: col.name,
       description: col.description,
       isFavorite: col.isFavorite,
-      itemCount: col.items.length,
+      itemCount: col._count.items,
       dominantColor,
       types,
     };
@@ -86,9 +88,11 @@ export async function getSidebarCollections(userId: string): Promise<{
     orderBy: { updatedAt: 'desc' },
     take: 20,
     include: {
+      _count: { select: { items: true } },
       items: {
+        take: 10,
         include: {
-          item: { include: { itemType: true } },
+          item: { select: { itemType: { select: { id: true, color: true } } } },
         },
       },
     },
@@ -107,7 +111,7 @@ export async function getSidebarCollections(userId: string): Promise<{
       id: col.id,
       name: col.name,
       isFavorite: col.isFavorite,
-      itemCount: col.items.length,
+      itemCount: col._count.items,
       dominantColor: sorted[0]?.color ?? '#6b7280',
     };
   });

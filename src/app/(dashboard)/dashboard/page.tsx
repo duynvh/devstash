@@ -6,8 +6,7 @@ import StatsCards from '@/components/dashboard/StatsCards';
 import RecentCollections from '@/components/dashboard/RecentCollections';
 import ItemRow from '@/components/dashboard/ItemRow';
 import Link from 'next/link';
-
-const DEMO_USER_EMAIL = 'demo@devstash.io';
+import { DEMO_USER_EMAIL } from '@/lib/constants/demo';
 
 async function getDemoUser() {
   return prisma.user.findUnique({ where: { email: DEMO_USER_EMAIL } });

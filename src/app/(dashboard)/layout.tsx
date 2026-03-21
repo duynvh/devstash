@@ -2,8 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { getSidebarCollections } from '@/lib/db/collections';
 import { getItemTypeCounts } from '@/lib/db/items';
 import { ClientShell } from './layout.client';
-
-const DEMO_USER_EMAIL = 'demo@devstash.io';
+import { DEMO_USER_EMAIL } from '@/lib/constants/demo';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await prisma.user.findUnique({ where: { email: DEMO_USER_EMAIL } });

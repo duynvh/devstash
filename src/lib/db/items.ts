@@ -15,10 +15,11 @@ export interface ItemWithType {
   tags: { name: string }[];
 }
 
-export async function getPinnedItems(userId: string): Promise<ItemWithType[]> {
+export async function getPinnedItems(userId: string, limit = 10): Promise<ItemWithType[]> {
   return prisma.item.findMany({
     where: { userId, isPinned: true },
     orderBy: { updatedAt: 'desc' },
+    take: limit,
     include: {
       itemType: { select: { name: true, icon: true, color: true } },
       tags: { select: { name: true } },

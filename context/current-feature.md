@@ -2,15 +2,23 @@
 
 ## Status
 
-Not Started
+Complete
 
 ## Goals
 
-<!-- Add goals here -->
+Fix the quick-win issues identified by the code scanner. No auth changes, no UI changes — pure refactoring and data hygiene.
+
+1. **N+1 Query Fix** — `getRecentCollections` and `getSidebarCollections` eager-load all items + itemType relations per collection just to compute `dominantColor` and `itemCount`. Add `_count` for accurate item totals and cap nested `items` include with a `take` limit for color computation only.
+2. **Unbounded `getPinnedItems`** — No `take` limit on pinned items query. Add `limit = 10` default parameter.
+3. **Centralize `DEMO_USER_EMAIL`** — The same constant is duplicated in `layout.tsx` and `dashboard/page.tsx`. Extract to `src/lib/constants/demo.ts`.
+4. **Shared `getItemTypeIcon` utility** — Icon lookup logic is duplicated between `ItemRow.tsx` and `RecentCollections.tsx` with slightly different implementations. Extract to `src/lib/constants/item-types.ts`.
+5. **Remove dead mock data** — `mockCollections`, `mockItems`, `mockItemTypes`, `mockItemTypeCounts` in `mock-data.ts` have zero consumers. Delete unused exports (only `mockUser` is active).
 
 ## Notes
 
-<!-- Add notes here -->
+- Authentication is NOT in scope — `DEMO_USER_EMAIL` stays as the data source, just deduplicated
+- No schema changes or migrations needed
+- All changes are pure refactors — behaviour and output are identical
 
 ## History
 
@@ -24,4 +32,4 @@ Not Started
 - Dashboard Collections: src/lib/db/collections.ts with Prisma data fetching, RecentCollections updated with dominant-color borders + per-type icons, dashboard page converted to async SSR with real DB data for collections and stats
 - Dashboard Items: src/lib/db/items.ts with getPinnedItems/getRecentItems, ItemRow updated to use real itemType data with tag pills, dashboard page replaced mock items with real DB fetches
 - Stats & Sidebar: Real item type counts in sidebar via getItemTypeCounts, real sidebar collections (favorites + recents with dominant color dot) via getSidebarCollections, "View all collections →" link added, layout refactored to server component for SSR data fetching
-- Add Pro Badge to Sidebar: Added isPro: true to Files and Images in ITEM_TYPES, added ShadCN Badge component with subtle outline styling shown inline next to PRO-gated type labels in the sidebar
+- Code Scan Quick Wins: N+1 fix in getRecentCollections/getSidebarCollections (_count + take limits), unbounded getPinnedItems capped at 10, DEMO_USER_EMAIL centralized to src/lib/constants/demo.ts, shared getItemTypeIcon utility extracted to item-types.ts (removed duplicate logic from ItemRow + RecentCollections), dead mock exports removed from mock-data.ts

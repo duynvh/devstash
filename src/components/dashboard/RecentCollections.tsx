@@ -1,18 +1,10 @@
 import Link from 'next/link';
 import { Star } from 'lucide-react';
-import { ITEM_TYPES } from '@/lib/constants/item-types';
+import { getItemTypeIcon } from '@/lib/constants/item-types';
 import type { CollectionWithTypes } from '@/lib/db/collections';
 
 interface RecentCollectionsProps {
   collections: CollectionWithTypes[];
-}
-
-function getIconComponent(iconName: string) {
-  const match = ITEM_TYPES.find(
-    (t) => t.label.toLowerCase() === iconName.toLowerCase() + 's' ||
-           t.key === iconName.toLowerCase() + 's'
-  );
-  return match?.icon ?? null;
 }
 
 export default function RecentCollections({ collections }: RecentCollectionsProps) {
@@ -47,7 +39,7 @@ export default function RecentCollections({ collections }: RecentCollectionsProp
             <div className="flex items-center justify-between mt-auto">
               <div className="flex items-center gap-1">
                 {col.types.slice(0, 4).map((t) => {
-                  const Icon = getIconComponent(t.name);
+                  const Icon = getItemTypeIcon(t.name);
                   if (!Icon) return null;
                   return (
                     <div
