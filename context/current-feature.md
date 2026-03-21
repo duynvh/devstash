@@ -1,22 +1,12 @@
-# Current Feature: Email Verification Toggle
+# Current Feature
 
 ## Status
 
-In Progress
+Not Started
 
 ## Goals
 
-- Add an env variable `EMAIL_VERIFICATION_ENABLED` to toggle the entire email verification system on/off
-- When disabled: skip sending verification email on register, skip the `emailVerified` check on sign-in, auto-set `emailVerified` on user creation
-- When enabled: current behavior (send email, block unverified sign-in)
-- Registration success message adapts based on the toggle (email prompt vs direct sign-in prompt)
-
 ## Notes
-
-- Resend free tier only delivers to the sender's own email (no domain linked yet)
-- The toggle must be a simple env variable so it can be flipped without code changes
-- Touch points: `authorize.ts` (sign-in check), `register/route.ts` (send email), `auth.ts` action (redirect message), `SignInForm.tsx` (success message)
-- The verify-email API route stays intact regardless — if someone has a valid token it should still work
 
 ## History
 
@@ -34,4 +24,5 @@ In Progress
 - Auth Phase 1: NextAuth v5 (next-auth@beta) + GitHub OAuth — split auth config pattern (auth.config.ts edge-safe + auth.ts with Prisma adapter + JWT), route handlers at /api/auth/[...nextauth], proxy at src/proxy.ts protecting /dashboard/*, Session extended with user.id
 - Auth Phase 2: Credentials provider (email/password) — auth.config.ts placeholder, auth.ts with bcrypt validation via authorizeCredentials helper, /api/auth/register POST route, Vitest setup with 11 unit tests (register route + authorize logic)
 - Auth Phase 3: Custom /sign-in page (email/password + GitHub OAuth), custom /register page (name/email/password/confirm + validation), reusable UserAvatar component (image or initials fallback), SidebarUser dropdown (profile link + sign-out), real session user wired into dashboard layout and sidebar
-- Email Verification on Register: Resend integration (src/lib/email/) for verification emails, GET /api/auth/verify-email route validates token and sets emailVerified, credentials sign-in blocked for unverified users with user-friendly error, sign-in page handles token error URL params, register success message updated to prompt email check, scripts/delete-all-users.ts added with confirmation prompt
+- Email Verification on Register: Resend integration (src/lib/email/) for verification emails, GET /api/auth/verify-email route validates token and sets emailVerified, credentials sign-in blocked for unverified users with user-friendly error, sign-in page handles token error URL params, register success message updated to prompt email check, scripts/delete-all-users.ts added with confirmation prompt
+- Email Verification Toggle: EMAIL_VERIFICATION_ENABLED env variable (defaults true), when false skips sending verification email, auto-sets emailVerified on register, bypasses verification check on sign-in, registration success message adapts ("check your email" vs "you can now sign in"), centralized flag in src/lib/constants/auth.ts, 12 tests passing
