@@ -1,31 +1,12 @@
-# Current Feature: Email Verification on Register
+# Current Feature
 
 ## Status
 
-In Progress
+Not Started
 
 ## Goals
 
-- When a new user registers with email/password, send a verification email via Resend
-- Email contains a one-time secure link (`/api/auth/verify-email?token=...`)
-- Clicking the link verifies the user's email (sets `emailVerified` in DB) and redirects to `/dashboard`
-- Unverified users who try to sign in with credentials are blocked with a clear error message
-- Verification tokens are stored in the existing `VerificationToken` Prisma model and expire after 24 hours
-- Resend is used for sending emails using the `RESEND_API_KEY` from `.env`
-
 ## Notes
-
-- The `User` model already has `emailVerified DateTime?` — no schema change needed
-- The `VerificationToken` model already exists (`identifier`, `token`, `expires`) — use it
-- GitHub OAuth users skip this flow entirely (they are verified by OAuth)
-- Only credentials-based registrations trigger the verification email
-- Token generation: use `crypto.randomUUID()` or `crypto.randomBytes` — no extra libraries
-- The register API (`/api/auth/register`) currently creates the user and returns success — extend it to also send the email
-- New API route needed: `GET /api/auth/verify-email?token=...` to handle link clicks
-- The sign-in flow in `authorizeCredentials` must block users where `emailVerified` is null
-- Show an appropriate error on the sign-in page for unverified accounts
-- Resend package: `resend` (install if not present)
-- Email "from" address: use `onboarding@resend.dev` for dev or configure a real domain sender
 
 ## History
 
@@ -43,3 +24,4 @@ In Progress
 - Auth Phase 1: NextAuth v5 (next-auth@beta) + GitHub OAuth — split auth config pattern (auth.config.ts edge-safe + auth.ts with Prisma adapter + JWT), route handlers at /api/auth/[...nextauth], proxy at src/proxy.ts protecting /dashboard/*, Session extended with user.id
 - Auth Phase 2: Credentials provider (email/password) — auth.config.ts placeholder, auth.ts with bcrypt validation via authorizeCredentials helper, /api/auth/register POST route, Vitest setup with 11 unit tests (register route + authorize logic)
 - Auth Phase 3: Custom /sign-in page (email/password + GitHub OAuth), custom /register page (name/email/password/confirm + validation), reusable UserAvatar component (image or initials fallback), SidebarUser dropdown (profile link + sign-out), real session user wired into dashboard layout and sidebar
+- Email Verification on Register: Resend integration (src/lib/email/) for verification emails, GET /api/auth/verify-email route validates token and sets emailVerified, credentials sign-in blocked for unverified users with user-friendly error, sign-in page handles token error URL params, register success message updated to prompt email check, scripts/delete-all-users.ts added with confirmation prompt
