@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { ITEM_TYPES } from '@/lib/constants/item-types';
 import { mockUser } from '@/lib/mock-data';
 import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import type { SidebarCollection } from '@/lib/db/collections';
 
 interface SidebarProps {
@@ -65,6 +66,11 @@ export default function Sidebar({ isCollapsed, onClose, itemTypeCounts, sidebarC
                   {!isCollapsed && (
                     <>
                       <span className="flex-1 truncate">{type.label}</span>
+                      {'isPro' in type && type.isPro && (
+                        <Badge variant="outline" className="h-4 px-1 text-[9px] font-semibold tracking-wider border-muted-foreground/30 text-muted-foreground/60">
+                          PRO
+                        </Badge>
+                      )}
                       <span className="text-xs text-muted-foreground tabular-nums">{count}</span>
                     </>
                   )}
