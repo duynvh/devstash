@@ -19,3 +19,13 @@ Read the following to get the full context of the project:
 - **Lint**: `npm run lint`
 
 **IMPORTANT:** Do not add Claude to any commit messages
+
+## Neon MCP
+
+When using the Neon MCP, always use the following by default:
+
+- **Project**: `devstash-dev` → `spring-fire-36054812`
+- **Branch**: `development` → `br-wispy-breeze-a18z3ise`
+- **Database**: `neondb`
+
+**IMPORTANT:** NEVER query or modify the `production` branch (`br-summer-haze-a198hzqq`) unless the user explicitly says so.

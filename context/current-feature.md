@@ -1,24 +1,30 @@
-# Current Feature
+# Current Feature: Auth Setup - NextAuth + GitHub Provider
 
 ## Status
 
-Complete
+In Progress
 
 ## Goals
 
-Fix the quick-win issues identified by the code scanner. No auth changes, no UI changes — pure refactoring and data hygiene.
-
-1. **N+1 Query Fix** — `getRecentCollections` and `getSidebarCollections` eager-load all items + itemType relations per collection just to compute `dominantColor` and `itemCount`. Add `_count` for accurate item totals and cap nested `items` include with a `take` limit for color computation only.
-2. **Unbounded `getPinnedItems`** — No `take` limit on pinned items query. Add `limit = 10` default parameter.
-3. **Centralize `DEMO_USER_EMAIL`** — The same constant is duplicated in `layout.tsx` and `dashboard/page.tsx`. Extract to `src/lib/constants/demo.ts`.
-4. **Shared `getItemTypeIcon` utility** — Icon lookup logic is duplicated between `ItemRow.tsx` and `RecentCollections.tsx` with slightly different implementations. Extract to `src/lib/constants/item-types.ts`.
-5. **Remove dead mock data** — `mockCollections`, `mockItems`, `mockItemTypes`, `mockItemTypeCounts` in `mock-data.ts` have zero consumers. Delete unused exports (only `mockUser` is active).
+- Install `next-auth@beta` and `@auth/prisma-adapter`
+- Set up the split auth config pattern for edge compatibility (`auth.config.ts` + `auth.ts`)
+- Add GitHub OAuth provider
+- Protect `/dashboard/*` routes via `src/proxy.ts` with redirect to sign-in for unauthenticated users
+- Export route handlers from `src/app/api/auth/[...nextauth]/route.ts`
+- Extend the `Session` type with `user.id` via `src/types/next-auth.d.ts`
+- Verify end-to-end: `/dashboard` redirects → GitHub sign-in → redirects back
 
 ## Notes
 
-- Authentication is NOT in scope — `DEMO_USER_EMAIL` stays as the data source, just deduplicated
-- No schema changes or migrations needed
-- All changes are pure refactors — behaviour and output are identical
+- Use `next-auth@beta` — NOT `@latest` (that installs v4)
+- Proxy file must be at `src/proxy.ts` (same level as `app/`), named export only: `export const proxy = auth(...)`
+- Use `session: { strategy: 'jwt' }` with the split config pattern
+- Do NOT set custom `pages.signIn` — use NextAuth's default page
+- Use Context7 to verify the newest config and conventions before implementing
+- Env vars needed: `AUTH_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`
+- References:
+  - Edge compatibility: https://authjs.dev/getting-started/installation#edge-compatibility
+  - Prisma adapter: https://authjs.dev/getting-started/adapters/prisma
 
 ## History
 
