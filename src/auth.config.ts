@@ -13,5 +13,7 @@ export const authConfig: NextAuthConfig = {
       authorize: () => null,
     }),
   ],
-  pages: {},
+  pages: {
+    signIn: '/sign-in',
+  },
 };
