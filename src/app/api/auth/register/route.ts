@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { sendVerificationEmail } from '@/lib/email/verification';
+import { EMAIL_VERIFICATION_ENABLED } from '@/lib/constants/auth';
 
 export async function POST(request: Request) {
   try {
@@ -24,13 +25,23 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const user = await prisma.user.create({
-      data: { name, email, password: hashedPassword },
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        ...(EMAIL_VERIFICATION_ENABLED ? {} : { emailVerified: new Date() }),
+      },
       select: { id: true, name: true, email: true },
     });
 
-    await sendVerificationEmail(email, name);
+    if (EMAIL_VERIFICATION_ENABLED) {
+      await sendVerificationEmail(email, name);
+    }
 
-    return NextResponse.json({ success: true, user }, { status: 201 });
+    return NextResponse.json(
+      { success: true, user, emailVerification: EMAIL_VERIFICATION_ENABLED },
+      { status: 201 },
+    );
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

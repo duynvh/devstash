@@ -1,12 +1,22 @@
-# Current Feature
+# Current Feature: Email Verification Toggle
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
 
+- Add an env variable `EMAIL_VERIFICATION_ENABLED` to toggle the entire email verification system on/off
+- When disabled: skip sending verification email on register, skip the `emailVerified` check on sign-in, auto-set `emailVerified` on user creation
+- When enabled: current behavior (send email, block unverified sign-in)
+- Registration success message adapts based on the toggle (email prompt vs direct sign-in prompt)
+
 ## Notes
+
+- Resend free tier only delivers to the sender's own email (no domain linked yet)
+- The toggle must be a simple env variable so it can be flipped without code changes
+- Touch points: `authorize.ts` (sign-in check), `register/route.ts` (send email), `auth.ts` action (redirect message), `SignInForm.tsx` (success message)
+- The verify-email API route stays intact regardless — if someone has a valid token it should still work
 
 ## History
 

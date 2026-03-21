@@ -59,10 +59,12 @@ export async function registerUser(
     body: JSON.stringify({ name, email, password, confirmPassword: confirm }),
   });
 
+  const body = await res.json().catch(() => ({}));
+
   if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
     return { error: body.error ?? 'Registration failed. Please try again.' };
   }
 
-  redirect('/sign-in?registered=1');
+  const param = body.emailVerification ? 'registered=verify' : 'registered=ready';
+  redirect(`/sign-in?${param}`);
 }

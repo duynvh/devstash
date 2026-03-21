@@ -14,6 +14,10 @@ vi.mock('bcryptjs', () => ({
   },
 }));
 
+vi.mock('@/lib/constants/auth', () => ({
+  EMAIL_VERIFICATION_ENABLED: true,
+}));
+
 import { authorizeCredentials } from './authorize';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
@@ -27,6 +31,7 @@ const fakeUser = {
   name: 'Boss Duy',
   image: null,
   password: 'hashed_pw',
+  emailVerified: new Date(),
 };
 
 describe('authorizeCredentials', () => {
@@ -64,6 +69,13 @@ describe('authorizeCredentials', () => {
     mockCompare.mockResolvedValue(false);
     const result = await authorizeCredentials('boss@devstash.io', 'wrong');
     expect(result).toBeNull();
+  });
+
+  it('throws EMAIL_NOT_VERIFIED when email is not verified', async () => {
+    mockFindUnique.mockResolvedValue({ ...fakeUser, emailVerified: null });
+    mockCompare.mockResolvedValue(true);
+    await expect(authorizeCredentials('boss@devstash.io', 'password123'))
+      .rejects.toThrow('EMAIL_NOT_VERIFIED');
   });
 
   it('returns user object when credentials are valid', async () => {
