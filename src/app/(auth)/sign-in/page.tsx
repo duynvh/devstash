@@ -25,7 +25,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
         <p className="text-sm text-muted-foreground mt-0.5">Welcome back</p>
       </div>
       <SignInForm
-        registered={registered === '1'}
+        registered={registered}
         urlError={error ? (URL_ERRORS[error] ?? null) : null}
       />
     </>

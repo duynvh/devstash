@@ -16,11 +16,21 @@ vi.mock('bcryptjs', () => ({
   },
 }));
 
+vi.mock('@/lib/email/verification', () => ({
+  sendVerificationEmail: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock('@/lib/constants/auth', () => ({
+  EMAIL_VERIFICATION_ENABLED: true,
+}));
+
 import { POST } from './route';
 import { prisma } from '@/lib/prisma';
+import { sendVerificationEmail } from '@/lib/email/verification';
 
 const mockFindUnique = prisma.user.findUnique as ReturnType<typeof vi.fn>;
 const mockCreate = prisma.user.create as ReturnType<typeof vi.fn>;
+const mockSendEmail = sendVerificationEmail as ReturnType<typeof vi.fn>;
 
 function makeRequest(body: object) {
   return new Request('http://localhost/api/auth/register', {
@@ -68,7 +78,7 @@ describe('POST /api/auth/register', () => {
     expect(json.error).toBe('User already exists');
   });
 
-  it('creates user and returns 201 on success', async () => {
+  it('creates user, sends verification email, and returns 201', async () => {
     mockFindUnique.mockResolvedValue(null);
     mockCreate.mockResolvedValue({ id: 'new-id', name: 'Test', email: 'test@test.com' });
 
@@ -82,6 +92,8 @@ describe('POST /api/auth/register', () => {
     const json = await res.json();
     expect(json.success).toBe(true);
     expect(json.user.email).toBe('test@test.com');
+    expect(json.emailVerification).toBe(true);
+    expect(mockSendEmail).toHaveBeenCalledWith('test@test.com', 'Test');
   });
 
   it('hashes password before creating user', async () => {
@@ -104,3 +116,4 @@ describe('POST /api/auth/register', () => {
     );
   });
 });
+

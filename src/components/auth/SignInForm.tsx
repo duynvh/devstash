@@ -11,18 +11,24 @@ import type { AuthFormState } from '@/actions/auth';
 const initialState: AuthFormState = {};
 
 interface SignInFormProps {
-  registered?: boolean;
+  registered?: string;
   urlError?: string | null;
 }
 
+const REGISTERED_MESSAGES: Record<string, string> = {
+  verify: 'Account created! Check your email to verify your account.',
+  ready: 'Account created! You can now sign in.',
+};
+
 export default function SignInForm({ registered, urlError }: SignInFormProps) {
   const [state, action, isPending] = useActionState(signInWithCredentials, initialState);
+  const registeredMessage = registered ? REGISTERED_MESSAGES[registered] : null;
 
   return (
     <div className="space-y-6">
-      {registered && (
+      {registeredMessage && (
         <p className="text-sm text-center text-emerald-400">
-          Account created! Check your email to verify your account.
+          {registeredMessage}
         </p>
       )}
 
