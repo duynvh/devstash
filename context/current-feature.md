@@ -1,29 +1,12 @@
-# Current Feature — Item Drawer: Edit Mode
+# Current Feature
 
 ## Status
 
-In Progress
+Not Started
 
 ## Goals
 
-- Edit button in the drawer action bar toggles the drawer into inline edit mode
-- Edit mode replaces the action bar with Save and Cancel buttons
-- Cancel discards changes and returns to view mode
-- Save persists changes via `updateItem` server action, returns to view mode, refreshes drawer data, calls `router.refresh()` for the card list
-- Toast notification on save success or error
-- Editable fields for all types: Title (required), Description (optional), Tags (comma-separated → array on save)
-- Type-specific editable fields: Content (snippet/prompt/command/note), Language (snippet/command), URL (link)
-- Non-editable in edit mode: item type, collections, created/updated dates
-- Client-side Save button disabled when title is empty
-- Zod validation in server action (source of truth); errors returned as `{ success: false, error }`
-
 ## Notes
-
-- No form library — use controlled inputs with local state
-- `updateItem(itemId, data)` server action in `src/actions/items.ts` — follows `{ success, data, error }` pattern
-- Query function `updateItem` in `lib/db/items.ts` — disconnect all existing tags, connect-or-create new ones
-- Returns updated `ItemDetail` so the drawer refreshes without a second fetch
-- The content textarea does NOT need to be a code editor (that comes later)
 
 ## History
 
@@ -50,3 +33,4 @@ In Progress
 - Items List View: Dynamic /items/[type] route (SSR server component) with getItemsByType Prisma query, ItemCard component with left border colored by item type, responsive 1→2 col grid, empty state per type, /items/:path* added to proxy matcher, fixed react-hooks/static-components lint in ItemCard + ItemRow
 - Items List View — Three Column Layout: Changed item listing grid from 2 to 3 columns on lg+ screens (grid-cols-1 md:grid-cols-2 lg:grid-cols-3), widened container from max-w-5xl to max-w-7xl for comfortable fit
 - Item Drawer: Right-side Sheet drawer opens on ItemCard/ItemRow click on both dashboard and items list pages; GET /api/items/[id] route fetches full detail with auth check; ItemDetail interface with collections, tags, language, URL, file metadata; DashboardItems + ItemsWithDrawer client wrappers manage drawer state; action bar (Favorite, Pin, Copy, Edit, Delete); skeleton loading state; shadcn Sheet + Skeleton installed; 6 unit tests for API route (401, 404, auth fallback, happy path, correct args)
+- Item Drawer Edit Mode: Inline edit mode toggled by pencil button; ItemDrawerEditForm component with controlled inputs for Title, Description, Content (snippet/prompt/command/note), Language (snippet/command), URL (link), Tags; updateItem server action in src/actions/items.ts with Zod validation and { success, data, error } pattern; updateItem DB query in lib/db/items.ts with tag disconnect + connect-or-create; sonner toast on save/error; router.refresh() post-save; Save disabled when title empty; 8 unit tests (auth guard, Zod validation, DB error, happy path, correct args)
