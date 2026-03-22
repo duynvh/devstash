@@ -1,3 +1,4 @@
+import { createElement } from 'react';
 import { Star, Pin } from 'lucide-react';
 import { ITEM_TYPES, getItemTypeIcon } from '@/lib/constants/item-types';
 import type { ItemWithType } from '@/lib/db/items';
@@ -7,7 +8,7 @@ interface ItemRowProps {
 }
 
 export default function ItemRow({ item }: ItemRowProps) {
-  const Icon = getItemTypeIcon(item.itemType.name) ?? ITEM_TYPES[0].icon;
+  const icon = getItemTypeIcon(item.itemType.name) ?? ITEM_TYPES[0].icon;
   const color = item.itemType.color;
 
   return (
@@ -16,7 +17,7 @@ export default function ItemRow({ item }: ItemRowProps) {
         className="size-7 rounded flex items-center justify-center shrink-0"
         style={{ backgroundColor: `${color}1a` }}
       >
-        <Icon className="size-3.5" style={{ color }} />
+        {createElement(icon, { className: 'size-3.5', style: { color } })}
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-foreground truncate">{item.title}</p>

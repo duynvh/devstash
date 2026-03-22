@@ -55,3 +55,18 @@ export async function getItemTypeCounts(userId: string): Promise<Record<string, 
   const nameById = Object.fromEntries(types.map((t) => [t.id, t.name]));
   return Object.fromEntries(groups.map((g) => [nameById[g.itemTypeId], g._count._all]));
 }
+
+export async function getItemsByType(userId: string, typeKey: string): Promise<ItemWithType[]> {
+  const singular = typeKey.replace(/s$/, '');
+  return prisma.item.findMany({
+    where: {
+      userId,
+      itemType: { name: { equals: singular, mode: 'insensitive' } },
+    },
+    orderBy: { updatedAt: 'desc' },
+    include: {
+      itemType: { select: { name: true, icon: true, color: true } },
+      tags: { select: { name: true } },
+    },
+  });
+}
