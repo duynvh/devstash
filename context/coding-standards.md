@@ -94,4 +94,14 @@ Example v4 configuration:
 - No commented-out code unless specified
 - No unused imports or variables
 - Keep functions under 50 lines when possible
+
+## Testing
+
+- Framework: **Vitest** (`npm run test`)
+- Scope: server actions (`src/actions/`), lib utilities (`src/lib/`), API routes (`src/app/api/`)
+- No component tests — use browser verification instead
+- Co-locate test files: `foo.ts` and `foo.test.ts` in the same directory
+- Always mock heavy dependencies (Prisma, bcrypt, external services) with `vi.mock()`
+- Place mocks before imports in test files
+- Global stubs (env vars, rate limiter) live in `src/tests/setup.ts`
 ```
