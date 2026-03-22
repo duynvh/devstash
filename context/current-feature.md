@@ -1,25 +1,12 @@
-# Current Feature: Fix GitHub OAuth Redirect
+# Current Feature
 
 ## Status
 
-In Progress
+Not Started
 
 ## Goals
 
-- Replace client-side `signIn` (next-auth/react) with a server-side `signIn` Server Action
-- GitHub sign-in completes in a single click and redirects reliably to `/dashboard`
-- Remove `isGitHubLoading` state and `handleGitHubSignIn` from `sign-in-form.tsx`
-- Create `src/actions/auth.ts` with `signInWithGitHub` server action
-- Switch GitHub button to a `<form action={signInWithGitHub}>` submit pattern
-- Build and tests pass after changes
-
 ## Notes
-
-- Root cause: client-side `signIn` has unreliable redirect behavior in production
-- Use `redirectTo` (NextAuth v5 API) not `callbackUrl` (v4)
-- No SessionProvider needed — server action handles redirect server-side
-- Credentials login is unaffected (uses `redirect: false`, works fine)
-- Verify with `npm run build` and `npm run test`, then test in production
 
 ## History
 
@@ -42,3 +29,4 @@ In Progress
 - Forgot Password: "Forgot password?" link on sign-in page, /forgot-password page with email form, /reset-password page with token-based new password form, POST /api/auth/forgot-password and POST /api/auth/reset-password routes, reuses VerificationToken model with 1-hour expiry, sendPasswordResetEmail via Resend, generic success messages for security, createVerificationToken refactored with configurable expiry, reset=success message on sign-in page
 - Profile Page: /profile route (auth-protected via proxy matcher), ProfileHeader with avatar (GitHub image or initials fallback) + name + email + join date, ProfileStats with total items/collections + per-type breakdown using getItemTypeIcon, ChangePasswordForm (email/password users only via hasPassword flag) with bcrypt validation, DeleteAccountSection with inline confirmation + cascading Prisma delete + sign-out, server actions in src/actions/profile.ts, data fetching in src/lib/db/profile.ts
 - Rate Limiting for Auth: Upstash Redis + @upstash/ratelimit sliding-window rate limits on 5 auth endpoints (login 5/15m IP+email, register 3/1h IP, forgot-password 3/1h IP, reset-password 5/15m IP, resend-verification 3/15m IP+email), reusable src/lib/rate-limit.ts utility (fail-open), 429 responses with Retry-After header, new POST /api/auth/resend-verification route, fixed proxy.ts default export for Next.js 16 middleware
+- GitHub OAuth Redirect Fix: Switched to server-side `signIn` server action, removed client-side `next-auth/react` signIn to fix unreliable redirect behavior
