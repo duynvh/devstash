@@ -1,12 +1,21 @@
-# Current Feature
+# Current Feature: Items List View — Three Column Layout
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
 
+- Item listing page uses a 3-column grid on large screens (`lg` breakpoint and above)
+- Remains 2 columns on medium screens (`md`)
+- Remains 1 column on small/mobile screens
+- No visual regressions on `ItemCard` or empty state
+
 ## Notes
+
+- Current grid in `/app/(dashboard)/items/[type]/page.tsx` is `grid-cols-1 md:grid-cols-2`
+- Change to `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`
+- `max-w-5xl` container may need widening to `max-w-7xl` to comfortably fit 3 columns
 
 ## History
 

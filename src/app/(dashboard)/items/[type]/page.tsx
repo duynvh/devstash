@@ -28,7 +28,7 @@ export default async function ItemsPage({ params }: ItemsPageProps) {
   const color = itemTypeDef.color;
 
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-6">
+    <div className="p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
         <div
           className="size-9 rounded-lg flex items-center justify-center"
@@ -58,7 +58,7 @@ export default async function ItemsPage({ params }: ItemsPageProps) {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {items.map((item) => (
             <ItemCard key={item.id} item={item} />
           ))}

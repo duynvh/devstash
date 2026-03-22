@@ -15,7 +15,7 @@ This is the common workflow that we will use for every single feature/fix:
 1. **Document** - Document the feature in @context/current-feature.md.
 2. **Branch** - Create new branch for feature, fix, etc
 3. **Implement** - Implement the feature/fix that I create in @context/current-feature.md
-4. **Test** - Verify it works in the browser. Implement unit testing later. Run `npm run build` and fix any errors
+4. **Test** - Verify it works in the browser. Write unit tests for server actions and utilities. Run `npm run build` and fix any errors
 5. **Iterate** - Iterate and change things if needed
 6. **Commit** - Only after build passes and everything works
 7. **Merge** - Merge to main
@@ -24,6 +24,16 @@ This is the common workflow that we will use for every single feature/fix:
 10. Mark as completed in @context/current-feature.md and add to history
 
 Do NOT commit without permission and until the build passes. If build fails, fix the issues first.
+
+## Testing
+
+- Run tests with `npm run test`
+- Only test **server actions** (`src/actions/`), **lib utilities** (`src/lib/`), and **API routes** (`src/app/api/`)
+- **No component tests** — browser verification is used instead
+- Test files live next to the code they test: `foo.ts` → `foo.test.ts`
+- Global test setup is in `src/tests/setup.ts` (env stubs, rate-limit mock)
+- Mock external dependencies (Prisma, bcrypt, email) per test file with `vi.mock()`
+- Use `forks` pool — tests run fast (~300ms total)
 
 ## Branching
 
