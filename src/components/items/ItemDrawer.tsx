@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ITEM_TYPES, getItemTypeIcon } from '@/lib/constants/item-types';
+import ItemDrawerEditForm from './ItemDrawerEditForm';
 import type { ItemDetail } from '@/lib/db/items';
 
 interface ItemDrawerProps {
@@ -22,28 +23,43 @@ export default function ItemDrawer({ itemId, onClose }: ItemDrawerProps) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!itemId) {
+    if (!itemId) return;
+    let active = true;
+    async function load() {
+      setLoading(true);
       setItem(null);
-      return;
+      try {
+        const r = await fetch(`/api/items/${itemId}`);
+        const data: ItemDetail = await r.json();
+        if (active) setItem(data);
+      } finally {
+        if (active) setLoading(false);
+      }
     }
-    setLoading(true);
-    fetch(`/api/items/${itemId}`)
-      .then((r) => r.json())
-      .then((data: ItemDetail) => setItem(data))
-      .finally(() => setLoading(false));
+    load();
+    return () => { active = false; };
   }, [itemId]);
 
   return (
     <Sheet open={!!itemId} onOpenChange={(open) => { if (!open) onClose(); }}>
       <SheetContent className="w-full sm:max-w-lg flex flex-col gap-0 p-0 overflow-y-auto" showCloseButton={false}>
         {loading && <DrawerSkeleton />}
-        {!loading && item && <DrawerContent item={item} onClose={onClose} />}
+        {!loading && item && <DrawerContent item={item} onClose={onClose} onItemUpdate={setItem} />}
       </SheetContent>
     </Sheet>
   );
 }
 
-function DrawerContent({ item, onClose }: { item: ItemDetail; onClose: () => void }) {
+function DrawerContent({
+  item,
+  onClose,
+  onItemUpdate,
+}: {
+  item: ItemDetail;
+  onClose: () => void;
+  onItemUpdate: (item: ItemDetail) => void;
+}) {
+  const [isEditing, setIsEditing] = useState(false);
   const icon = getItemTypeIcon(item.itemType.name) ?? ITEM_TYPES[0].icon;
   const color = item.itemType.color;
 
@@ -70,89 +86,125 @@ function DrawerContent({ item, onClose }: { item: ItemDetail; onClose: () => voi
         </div>
 
         <div className="flex items-center justify-between mt-4">
-          <div className="flex items-center gap-1">
-            <ActionButton
-              label="Favorite"
-              icon={<Star className={`size-4 ${item.isFavorite ? 'fill-yellow-400 text-yellow-400' : ''}`} />}
-            />
-            <ActionButton label="Pin" icon={<Pin className={`size-4 ${item.isPinned ? 'text-foreground' : ''}`} />} />
-            <ActionButton label="Copy" icon={<Copy className="size-4" />} />
-            <ActionButton label="Edit" icon={<Pencil className="size-4" />} />
-          </div>
-          <ActionButton label="Delete" icon={<Trash2 className="size-4 text-destructive" />} />
+          {isEditing ? (
+            <p className="text-xs text-muted-foreground italic">Editing…</p>
+          ) : (
+            <>
+              <div className="flex items-center gap-1">
+                <ActionButton
+                  label="Favorite"
+                  icon={<Star className={`size-4 ${item.isFavorite ? 'fill-yellow-400 text-yellow-400' : ''}`} />}
+                />
+                <ActionButton label="Pin" icon={<Pin className={`size-4 ${item.isPinned ? 'text-foreground' : ''}`} />} />
+                <ActionButton label="Copy" icon={<Copy className="size-4" />} />
+                <ActionButton
+                  label="Edit"
+                  icon={<Pencil className="size-4" />}
+                  onClick={() => setIsEditing(true)}
+                />
+              </div>
+              <ActionButton label="Delete" icon={<Trash2 className="size-4 text-destructive" />} />
+            </>
+          )}
         </div>
       </SheetHeader>
 
-      <div className="px-5 py-4 space-y-5 flex-1">
-        {item.description && (
-          <Section label="Description">
-            <p className="text-sm text-muted-foreground">{item.description}</p>
-          </Section>
-        )}
-
-        {item.tags.length > 0 && (
-          <Section label="Tags" icon={<Tag className="size-3" />}>
-            <div className="flex flex-wrap gap-1.5">
-              {item.tags.map((tag) => (
-                <span
-                  key={tag.name}
-                  className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground"
-                >
-                  {tag.name}
-                </span>
-              ))}
-            </div>
-          </Section>
-        )}
-
-        {item.collections.length > 0 && (
-          <Section label="Collections" icon={<FolderOpen className="size-3" />}>
-            <div className="flex flex-wrap gap-1.5">
-              {item.collections.map(({ collection }) => (
-                <span
-                  key={collection.id}
-                  className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground"
-                >
-                  {collection.name}
-                </span>
-              ))}
-            </div>
-          </Section>
-        )}
-
-        <Section label="Details" icon={<Calendar className="size-3" />}>
-          <dl className="space-y-1.5 text-xs">
-            <DetailRow label="Created" value={formatDate(item.createdAt)} />
-            <DetailRow label="Updated" value={formatDate(item.updatedAt)} />
-            {item.language && <DetailRow label="Language" value={item.language} />}
-            {item.fileName && <DetailRow label="File" value={item.fileName} />}
-            {item.fileSize != null && <DetailRow label="Size" value={formatBytes(item.fileSize)} />}
-            {item.url && (
-              <DetailRow
-                label="URL"
-                value={
-                  <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline truncate block max-w-[200px]"
-                  >
-                    {item.url}
-                  </a>
-                }
-              />
-            )}
-          </dl>
-        </Section>
-      </div>
+      {isEditing ? (
+        <ItemDrawerEditForm
+          item={item}
+          onCancel={() => setIsEditing(false)}
+          onSaved={(updated) => {
+            onItemUpdate(updated);
+            setIsEditing(false);
+          }}
+        />
+      ) : (
+        <ViewContent item={item} />
+      )}
     </>
   );
 }
 
-function ActionButton({ icon, label }: { icon: React.ReactNode; label: string }) {
+function ViewContent({ item }: { item: ItemDetail }) {
+  return (
+    <div className="px-5 py-4 space-y-5 flex-1">
+      {item.description && (
+        <Section label="Description">
+          <p className="text-sm text-muted-foreground">{item.description}</p>
+        </Section>
+      )}
+
+      {item.tags.length > 0 && (
+        <Section label="Tags" icon={<Tag className="size-3" />}>
+          <div className="flex flex-wrap gap-1.5">
+            {item.tags.map((tag) => (
+              <span
+                key={tag.name}
+                className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground"
+              >
+                {tag.name}
+              </span>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {item.collections.length > 0 && (
+        <Section label="Collections" icon={<FolderOpen className="size-3" />}>
+          <div className="flex flex-wrap gap-1.5">
+            {item.collections.map(({ collection }) => (
+              <span
+                key={collection.id}
+                className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground"
+              >
+                {collection.name}
+              </span>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      <Section label="Details" icon={<Calendar className="size-3" />}>
+        <dl className="space-y-1.5 text-xs">
+          <DetailRow label="Created" value={formatDate(item.createdAt)} />
+          <DetailRow label="Updated" value={formatDate(item.updatedAt)} />
+          {item.language && <DetailRow label="Language" value={item.language} />}
+          {item.fileName && <DetailRow label="File" value={item.fileName} />}
+          {item.fileSize != null && <DetailRow label="Size" value={formatBytes(item.fileSize)} />}
+          {item.url && (
+            <DetailRow
+              label="URL"
+              value={
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline truncate block max-w-[200px]"
+                >
+                  {item.url}
+                </a>
+              }
+            />
+          )}
+        </dl>
+      </Section>
+    </div>
+  );
+}
+
+function ActionButton({
+  icon,
+  label,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  onClick?: () => void;
+}) {
   return (
     <button
       title={label}
+      onClick={onClick}
       className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
     >
       {icon}
