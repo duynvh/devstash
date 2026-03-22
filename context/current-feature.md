@@ -1,12 +1,27 @@
-# Current Feature
+# Current Feature: Delete Item
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
 
+- Delete button in ItemDrawer action bar triggers a shadcn AlertDialog for confirmation
+- AlertDialog shows item title and warns the action is irreversible
+- Confirming calls a `deleteItem` server action that removes the item from the DB (auth-guarded)
+- On success: drawer closes and a sonner toast shows "Item deleted"
+- On error: toast shows the error message
+- `deleteItem` DB query in `src/lib/db/items.ts`
+- `deleteItem` server action in `src/actions/items.ts`
+- Unit tests for the server action (auth guard, DB error, happy path)
+
 ## Notes
+
+- Use shadcn `AlertDialog` component (install if not present)
+- Sonner toast is already wired via `src/components/ui/sonner.tsx`
+- Pattern: `{ success, data, error }` return type from server action
+- After delete, call `onClose()` on the drawer and `router.refresh()` to update the list
+- The delete button already exists in `ItemDrawer.tsx` as an `ActionButton` — wire it up
 
 ## History
 

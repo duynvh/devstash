@@ -6,14 +6,16 @@ vi.mock('@/auth', () => ({
 
 vi.mock('@/lib/db/items', () => ({
   updateItem: vi.fn(),
+  deleteItem: vi.fn(),
 }));
 
-import { updateItem } from './items';
+import { updateItem, deleteItem } from './items';
 import { auth } from '@/auth';
-import { updateItem as dbUpdateItem } from '@/lib/db/items';
+import { updateItem as dbUpdateItem, deleteItem as dbDeleteItem } from '@/lib/db/items';
 
 const mockAuth = auth as ReturnType<typeof vi.fn>;
 const mockDbUpdate = dbUpdateItem as ReturnType<typeof vi.fn>;
+const mockDbDelete = dbDeleteItem as ReturnType<typeof vi.fn>;
 
 const fakeItem = {
   id: 'item-1',
@@ -134,5 +136,39 @@ describe('updateItem action', () => {
     });
 
     expect(result.success).toBe(true);
+  });
+});
+
+describe('deleteItem action', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('returns error when not authenticated', async () => {
+    mockAuth.mockResolvedValue(null);
+
+    const result = await deleteItem('item-1');
+
+    expect(result).toEqual({ success: false, error: 'Not authenticated.' });
+    expect(mockDbDelete).not.toHaveBeenCalled();
+  });
+
+  it('returns error when DB throws', async () => {
+    mockAuth.mockResolvedValue({ user: { id: 'user-1' } });
+    mockDbDelete.mockRejectedValue(new Error('DB error'));
+
+    const result = await deleteItem('item-1');
+
+    expect(result).toEqual({ success: false, error: 'Failed to delete item.' });
+  });
+
+  it('returns success on happy path', async () => {
+    mockAuth.mockResolvedValue({ user: { id: 'user-1' } });
+    mockDbDelete.mockResolvedValue(undefined);
+
+    const result = await deleteItem('item-1');
+
+    expect(result).toEqual({ success: true, data: null });
+    expect(mockDbDelete).toHaveBeenCalledWith('item-1', 'user-1');
   });
 });

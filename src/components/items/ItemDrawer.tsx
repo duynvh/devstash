@@ -1,15 +1,28 @@
 'use client';
 
 import { useEffect, useState, createElement } from 'react';
+import { useRouter } from 'next/navigation';
 import { Star, Pin, Copy, Pencil, Trash2, X, Calendar, Tag, FolderOpen } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ITEM_TYPES, getItemTypeIcon } from '@/lib/constants/item-types';
+import { deleteItem } from '@/actions/items';
 import ItemDrawerEditForm from './ItemDrawerEditForm';
 import type { ItemDetail } from '@/lib/db/items';
 
@@ -59,9 +72,25 @@ function DrawerContent({
   onClose: () => void;
   onItemUpdate: (item: ItemDetail) => void;
 }) {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const icon = getItemTypeIcon(item.itemType.name) ?? ITEM_TYPES[0].icon;
   const color = item.itemType.color;
+
+  async function handleDelete() {
+    setIsDeleting(true);
+    const result = await deleteItem(item.id);
+    setIsDeleting(false);
+    if (result.success) {
+      toast.success('Item deleted');
+      onClose();
+      router.refresh();
+    } else {
+      toast.error(result.error);
+    }
+  }
 
   return (
     <>
@@ -103,7 +132,11 @@ function DrawerContent({
                   onClick={() => setIsEditing(true)}
                 />
               </div>
-              <ActionButton label="Delete" icon={<Trash2 className="size-4 text-destructive" />} />
+              <ActionButton
+                label="Delete"
+                icon={<Trash2 className="size-4 text-destructive" />}
+                onClick={() => setShowDeleteDialog(true)}
+              />
             </>
           )}
         </div>
@@ -121,6 +154,28 @@ function DrawerContent({
       ) : (
         <ViewContent item={item} />
       )}
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete item?</AlertDialogTitle>
+            <AlertDialogDescription>
+              <span className="font-medium text-foreground">&ldquo;{item.title}&rdquo;</span> will be permanently deleted.
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? 'Deleting…' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

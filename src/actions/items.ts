@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 import { auth } from '@/auth';
-import { updateItem as dbUpdateItem } from '@/lib/db/items';
+import { updateItem as dbUpdateItem, deleteItem as dbDeleteItem } from '@/lib/db/items';
 import type { ItemDetail } from '@/lib/db/items';
 
 type ActionResult<T> =
@@ -44,5 +44,17 @@ export async function updateItem(
     return { success: true, data: item };
   } catch {
     return { success: false, error: 'Failed to update item.' };
+  }
+}
+
+export async function deleteItem(itemId: string): Promise<ActionResult<null>> {
+  const session = await auth();
+  if (!session?.user?.id) return { success: false, error: 'Not authenticated.' };
+
+  try {
+    await dbDeleteItem(itemId, session.user.id);
+    return { success: true, data: null };
+  } catch {
+    return { success: false, error: 'Failed to delete item.' };
   }
 }
