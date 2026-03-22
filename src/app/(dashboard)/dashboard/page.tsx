@@ -1,11 +1,9 @@
-import { Pin } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import { getRecentCollections, getCollectionStats } from '@/lib/db/collections';
 import { getPinnedItems, getRecentItems } from '@/lib/db/items';
 import StatsCards from '@/components/dashboard/StatsCards';
 import RecentCollections from '@/components/dashboard/RecentCollections';
-import ItemRow from '@/components/dashboard/ItemRow';
-import Link from 'next/link';
+import DashboardItems from '@/components/dashboard/DashboardItems';
 import { DEMO_USER_EMAIL } from '@/lib/constants/demo';
 
 async function getDemoUser() {
@@ -59,36 +57,7 @@ export default async function DashboardPage() {
 
       <RecentCollections collections={collections} />
 
-      {pinnedItems.length > 0 && (
-        <section>
-          <div className="flex items-center gap-2 mb-3">
-            <Pin className="size-3.5 text-muted-foreground" />
-            <h2 className="text-sm font-medium text-foreground">Pinned</h2>
-          </div>
-          <div className="rounded-lg border border-border divide-y divide-border overflow-hidden">
-            {pinnedItems.map((item) => (
-              <ItemRow key={item.id} item={item} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      <section>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-medium text-foreground">Recent Items</h2>
-          <Link
-            href="/items"
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            View all
-          </Link>
-        </div>
-        <div className="rounded-lg border border-border divide-y divide-border overflow-hidden">
-          {recentItems.map((item) => (
-            <ItemRow key={item.id} item={item} />
-          ))}
-        </div>
-      </section>
+      <DashboardItems pinnedItems={pinnedItems} recentItems={recentItems} />
     </div>
   );
 }

@@ -1,5 +1,35 @@
 import { prisma } from '@/lib/prisma';
 
+export interface ItemDetail {
+  id: string;
+  title: string;
+  description: string | null;
+  content: string | null;
+  fileUrl: string | null;
+  fileName: string | null;
+  fileSize: number | null;
+  url: string | null;
+  language: string | null;
+  isFavorite: boolean;
+  isPinned: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  itemType: { name: string; icon: string; color: string };
+  tags: { name: string }[];
+  collections: { collection: { id: string; name: string } }[];
+}
+
+export async function getItemById(id: string, userId: string): Promise<ItemDetail | null> {
+  return prisma.item.findFirst({
+    where: { id, userId },
+    include: {
+      itemType: { select: { name: true, icon: true, color: true } },
+      tags: { select: { name: true } },
+      collections: { select: { collection: { select: { id: true, name: true } } } },
+    },
+  });
+}
+
 export interface ItemWithType {
   id: string;
   title: string;

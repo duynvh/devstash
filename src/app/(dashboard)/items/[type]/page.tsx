@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { getItemsByType } from '@/lib/db/items';
 import { ITEM_TYPES } from '@/lib/constants/item-types';
 import { DEMO_USER_EMAIL } from '@/lib/constants/demo';
-import ItemCard from '@/components/items/ItemCard';
+import ItemsWithDrawer from '@/components/items/ItemsWithDrawer';
 import type { ItemTypeKey } from '@/lib/constants/item-types';
 
 interface ItemsPageProps {
@@ -58,11 +58,7 @@ export default async function ItemsPage({ params }: ItemsPageProps) {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {items.map((item) => (
-            <ItemCard key={item.id} item={item} />
-          ))}
-        </div>
+        <ItemsWithDrawer items={items} />
       )}
     </div>
   );
