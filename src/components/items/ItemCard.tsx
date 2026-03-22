@@ -5,9 +5,10 @@ import type { ItemWithType } from '@/lib/db/items';
 
 interface ItemCardProps {
   item: ItemWithType;
+  onClick?: () => void;
 }
 
-export default function ItemCard({ item }: ItemCardProps) {
+export default function ItemCard({ item, onClick }: ItemCardProps) {
   const icon = getItemTypeIcon(item.itemType.name) ?? ITEM_TYPES[0].icon;
   const color = item.itemType.color;
 
@@ -15,6 +16,7 @@ export default function ItemCard({ item }: ItemCardProps) {
     <div
       className="bg-card border border-border rounded-lg p-4 hover:bg-muted/30 transition-colors cursor-pointer border-l-[3px]"
       style={{ borderLeftColor: color }}
+      onClick={onClick}
     >
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex items-center gap-2 min-w-0">

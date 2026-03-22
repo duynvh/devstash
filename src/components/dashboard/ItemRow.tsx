@@ -5,14 +5,15 @@ import type { ItemWithType } from '@/lib/db/items';
 
 interface ItemRowProps {
   item: ItemWithType;
+  onClick?: () => void;
 }
 
-export default function ItemRow({ item }: ItemRowProps) {
+export default function ItemRow({ item, onClick }: ItemRowProps) {
   const icon = getItemTypeIcon(item.itemType.name) ?? ITEM_TYPES[0].icon;
   const color = item.itemType.color;
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3 bg-card hover:bg-muted/30 transition-colors cursor-pointer">
+    <div className="flex items-center gap-3 px-4 py-3 bg-card hover:bg-muted/30 transition-colors cursor-pointer" onClick={onClick}>
       <div
         className="size-7 rounded flex items-center justify-center shrink-0"
         style={{ backgroundColor: `${color}1a` }}
