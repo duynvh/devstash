@@ -1,21 +1,12 @@
-# Current Feature: Items List View — Three Column Layout
+# Current Feature
 
 ## Status
 
-In Progress
+Not Started
 
 ## Goals
 
-- Item listing page uses a 3-column grid on large screens (`lg` breakpoint and above)
-- Remains 2 columns on medium screens (`md`)
-- Remains 1 column on small/mobile screens
-- No visual regressions on `ItemCard` or empty state
-
 ## Notes
-
-- Current grid in `/app/(dashboard)/items/[type]/page.tsx` is `grid-cols-1 md:grid-cols-2`
-- Change to `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`
-- `max-w-5xl` container may need widening to `max-w-7xl` to comfortably fit 3 columns
 
 ## History
 
@@ -40,3 +31,4 @@ In Progress
 - Rate Limiting for Auth: Upstash Redis + @upstash/ratelimit sliding-window rate limits on 5 auth endpoints (login 5/15m IP+email, register 3/1h IP, forgot-password 3/1h IP, reset-password 5/15m IP, resend-verification 3/15m IP+email), reusable src/lib/rate-limit.ts utility (fail-open), 429 responses with Retry-After header, new POST /api/auth/resend-verification route, fixed proxy.ts default export for Next.js 16 middleware
 - GitHub OAuth Redirect Fix: Switched to server-side `signIn` server action, removed client-side `next-auth/react` signIn to fix unreliable redirect behavior
 - Items List View: Dynamic /items/[type] route (SSR server component) with getItemsByType Prisma query, ItemCard component with left border colored by item type, responsive 1→2 col grid, empty state per type, /items/:path* added to proxy matcher, fixed react-hooks/static-components lint in ItemCard + ItemRow
+- Items List View — Three Column Layout: Changed item listing grid from 2 to 3 columns on lg+ screens (grid-cols-1 md:grid-cols-2 lg:grid-cols-3), widened container from max-w-5xl to max-w-7xl for comfortable fit
