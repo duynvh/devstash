@@ -100,3 +100,41 @@ export async function getItemsByType(userId: string, typeKey: string): Promise<I
     },
   });
 }
+
+export interface UpdateItemData {
+  title: string;
+  description: string | null;
+  content: string | null;
+  url: string | null;
+  language: string | null;
+  tags: string[];
+}
+
+export async function updateItem(
+  id: string,
+  userId: string,
+  data: UpdateItemData
+): Promise<ItemDetail> {
+  return prisma.item.update({
+    where: { id, userId },
+    data: {
+      title: data.title,
+      description: data.description,
+      content: data.content,
+      url: data.url,
+      language: data.language,
+      tags: {
+        set: [],
+        connectOrCreate: data.tags.map((name) => ({
+          where: { name },
+          create: { name },
+        })),
+      },
+    },
+    include: {
+      itemType: { select: { name: true, icon: true, color: true } },
+      tags: { select: { name: true } },
+      collections: { select: { collection: { select: { id: true, name: true } } } },
+    },
+  });
+}
