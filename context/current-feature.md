@@ -1,27 +1,12 @@
-# Current Feature: Delete Item
+# Current Feature
 
 ## Status
 
-In Progress
+Not Started
 
 ## Goals
 
-- Delete button in ItemDrawer action bar triggers a shadcn AlertDialog for confirmation
-- AlertDialog shows item title and warns the action is irreversible
-- Confirming calls a `deleteItem` server action that removes the item from the DB (auth-guarded)
-- On success: drawer closes and a sonner toast shows "Item deleted"
-- On error: toast shows the error message
-- `deleteItem` DB query in `src/lib/db/items.ts`
-- `deleteItem` server action in `src/actions/items.ts`
-- Unit tests for the server action (auth guard, DB error, happy path)
-
 ## Notes
-
-- Use shadcn `AlertDialog` component (install if not present)
-- Sonner toast is already wired via `src/components/ui/sonner.tsx`
-- Pattern: `{ success, data, error }` return type from server action
-- After delete, call `onClose()` on the drawer and `router.refresh()` to update the list
-- The delete button already exists in `ItemDrawer.tsx` as an `ActionButton` — wire it up
 
 ## History
 
@@ -49,3 +34,4 @@ In Progress
 - Items List View — Three Column Layout: Changed item listing grid from 2 to 3 columns on lg+ screens (grid-cols-1 md:grid-cols-2 lg:grid-cols-3), widened container from max-w-5xl to max-w-7xl for comfortable fit
 - Item Drawer: Right-side Sheet drawer opens on ItemCard/ItemRow click on both dashboard and items list pages; GET /api/items/[id] route fetches full detail with auth check; ItemDetail interface with collections, tags, language, URL, file metadata; DashboardItems + ItemsWithDrawer client wrappers manage drawer state; action bar (Favorite, Pin, Copy, Edit, Delete); skeleton loading state; shadcn Sheet + Skeleton installed; 6 unit tests for API route (401, 404, auth fallback, happy path, correct args)
 - Item Drawer Edit Mode: Inline edit mode toggled by pencil button; ItemDrawerEditForm component with controlled inputs for Title, Description, Content (snippet/prompt/command/note), Language (snippet/command), URL (link), Tags; updateItem server action in src/actions/items.ts with Zod validation and { success, data, error } pattern; updateItem DB query in lib/db/items.ts with tag disconnect + connect-or-create; sonner toast on save/error; router.refresh() post-save; Save disabled when title empty; 8 unit tests (auth guard, Zod validation, DB error, happy path, correct args)
+- Delete Item: shadcn AlertDialog confirmation triggered from Delete button in ItemDrawer; deleteItem server action in src/actions/items.ts (auth-guarded, { success, data, error } pattern); deleteItem DB query in src/lib/db/items.ts (userId-scoped Prisma delete); sonner toast on success/error; drawer closes + router.refresh() post-delete; shadcn alert-dialog component installed; 3 unit tests (auth guard, DB error, happy path)
