@@ -1,23 +1,12 @@
-# Current Feature: Items List View
+# Current Feature
 
 ## Status
 
-In Progress
+Not Started
 
 ## Goals
 
-- Create dynamic route `/items/[type]` (e.g., `/items/snippets`, `/items/notes`)
-- Fetch and display items filtered by type from the database
-- Responsive grid of `ItemCard` components (2 columns on md+)
-- Each card has a left border colored by its item type
-- Follow existing codebase patterns
-
 ## Notes
-
-- Route: `/items/[type]` — `type` maps to item type slugs (e.g., `snippets`, `notes`, `commands`)
-- Grid layout: 1 col mobile, 2 col md+
-- Left border color per item type (uses existing item type hex color constants)
-- Leverage existing `src/lib/db/items.ts` and item type utilities
 
 ## History
 
@@ -41,3 +30,4 @@ In Progress
 - Profile Page: /profile route (auth-protected via proxy matcher), ProfileHeader with avatar (GitHub image or initials fallback) + name + email + join date, ProfileStats with total items/collections + per-type breakdown using getItemTypeIcon, ChangePasswordForm (email/password users only via hasPassword flag) with bcrypt validation, DeleteAccountSection with inline confirmation + cascading Prisma delete + sign-out, server actions in src/actions/profile.ts, data fetching in src/lib/db/profile.ts
 - Rate Limiting for Auth: Upstash Redis + @upstash/ratelimit sliding-window rate limits on 5 auth endpoints (login 5/15m IP+email, register 3/1h IP, forgot-password 3/1h IP, reset-password 5/15m IP, resend-verification 3/15m IP+email), reusable src/lib/rate-limit.ts utility (fail-open), 429 responses with Retry-After header, new POST /api/auth/resend-verification route, fixed proxy.ts default export for Next.js 16 middleware
 - GitHub OAuth Redirect Fix: Switched to server-side `signIn` server action, removed client-side `next-auth/react` signIn to fix unreliable redirect behavior
+- Items List View: Dynamic /items/[type] route (SSR server component) with getItemsByType Prisma query, ItemCard component with left border colored by item type, responsive 1→2 col grid, empty state per type, /items/:path* added to proxy matcher, fixed react-hooks/static-components lint in ItemCard + ItemRow
