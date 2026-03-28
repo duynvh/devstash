@@ -6,7 +6,11 @@ Not Started
 
 ## Goals
 
+<!-- List bullet points of what success looks like -->
+
 ## Notes
+
+<!-- Additional context, constraints, or details from spec -->
 
 ## History
 
@@ -35,3 +39,4 @@ Not Started
 - Item Drawer: Right-side Sheet drawer opens on ItemCard/ItemRow click on both dashboard and items list pages; GET /api/items/[id] route fetches full detail with auth check; ItemDetail interface with collections, tags, language, URL, file metadata; DashboardItems + ItemsWithDrawer client wrappers manage drawer state; action bar (Favorite, Pin, Copy, Edit, Delete); skeleton loading state; shadcn Sheet + Skeleton installed; 6 unit tests for API route (401, 404, auth fallback, happy path, correct args)
 - Item Drawer Edit Mode: Inline edit mode toggled by pencil button; ItemDrawerEditForm component with controlled inputs for Title, Description, Content (snippet/prompt/command/note), Language (snippet/command), URL (link), Tags; updateItem server action in src/actions/items.ts with Zod validation and { success, data, error } pattern; updateItem DB query in lib/db/items.ts with tag disconnect + connect-or-create; sonner toast on save/error; router.refresh() post-save; Save disabled when title empty; 8 unit tests (auth guard, Zod validation, DB error, happy path, correct args)
 - Delete Item: shadcn AlertDialog confirmation triggered from Delete button in ItemDrawer; deleteItem server action in src/actions/items.ts (auth-guarded, { success, data, error } pattern); deleteItem DB query in src/lib/db/items.ts (userId-scoped Prisma delete); sonner toast on success/error; drawer closes + router.refresh() post-delete; shadcn alert-dialog component installed; 3 unit tests (auth guard, DB error, happy path)
+- Item Create: shadcn Dialog modal from "New Item" button in TopBar; type selector (snippet, prompt, command, note, link); dynamic fields per type (title/description/tags for all; content+language for snippet/command; content for prompt/note; URL for link); createItem server action with Zod validation and { success, data, error } pattern; createItem DB query in lib/db/items.ts with tag connect-or-create; shadcn Dialog + Select installed; sonner toast on success; modal closes + router.refresh() post-create
