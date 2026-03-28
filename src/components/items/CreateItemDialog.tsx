@@ -7,6 +7,7 @@ import { Plus } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { createItem } from '@/actions/items';
+import CodeEditor from './CodeEditor';
 
 const TYPES = [
   { value: 'snippet', label: 'Snippet' },
@@ -19,7 +20,7 @@ const TYPES = [
 type TypeValue = (typeof TYPES)[number]['value'];
 
 const CONTENT_TYPES: TypeValue[] = ['snippet', 'prompt', 'command', 'note'];
-const LANGUAGE_TYPES: TypeValue[] = ['snippet', 'command'];
+const CODE_EDITOR_TYPES: TypeValue[] = ['snippet', 'command'];
 
 export default function CreateItemDialog() {
   const router = useRouter();
@@ -124,23 +125,31 @@ export default function CreateItemDialog() {
 
             {CONTENT_TYPES.includes(typeName) && (
               <Field label="Content">
-                <textarea
-                  id="create-content"
-                  className="input-base resize-none font-mono text-xs"
-                  rows={5}
-                  placeholder="Paste your content…"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                />
+                {CODE_EDITOR_TYPES.includes(typeName) ? (
+                  <CodeEditor
+                    value={content}
+                    onChange={setContent}
+                    language={language || 'plaintext'}
+                  />
+                ) : (
+                  <textarea
+                    id="create-content"
+                    className="input-base resize-none"
+                    rows={5}
+                    placeholder="Paste your content…"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                  />
+                )}
               </Field>
             )}
 
-            {LANGUAGE_TYPES.includes(typeName) && (
+            {CODE_EDITOR_TYPES.includes(typeName) && (
               <Field label="Language">
                 <input
                   id="create-language"
                   className="input-base"
-                  placeholder="e.g. typescript"
+                  placeholder="e.g. typescript, bash"
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
                 />

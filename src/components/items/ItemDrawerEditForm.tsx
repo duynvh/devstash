@@ -4,10 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { updateItem } from '@/actions/items';
+import CodeEditor from './CodeEditor';
 import type { ItemDetail } from '@/lib/db/items';
 
 const CONTENT_TYPES = ['snippet', 'prompt', 'command', 'note'];
-const LANGUAGE_TYPES = ['snippet', 'command'];
+const CODE_EDITOR_TYPES = ['snippet', 'command'];
 const URL_TYPES = ['link'];
 
 interface Props {
@@ -78,21 +79,30 @@ export default function ItemDrawerEditForm({ item, onCancel, onSaved }: Props) {
 
       {CONTENT_TYPES.includes(typeName) && (
         <Field label="Content">
-          <textarea
-            id="edit-content"
-            className="input-base resize-none font-mono text-xs"
-            rows={6}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
+          {CODE_EDITOR_TYPES.includes(typeName) ? (
+            <CodeEditor
+              value={content}
+              onChange={setContent}
+              language={language || 'plaintext'}
+            />
+          ) : (
+            <textarea
+              id="edit-content"
+              className="input-base resize-none"
+              rows={6}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+            />
+          )}
         </Field>
       )}
 
-      {LANGUAGE_TYPES.includes(typeName) && (
+      {CODE_EDITOR_TYPES.includes(typeName) && (
         <Field label="Language">
           <input
             id="edit-language"
             className="input-base"
+            placeholder="e.g. typescript, bash"
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
           />
