@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import type { ContentType } from '@/generated/prisma/client';
 
 export interface ItemDetail {
   id: string;
@@ -142,3 +143,54 @@ export async function updateItem(
 export async function deleteItem(id: string, userId: string): Promise<void> {
   await prisma.item.delete({ where: { id, userId } });
 }
+
+export interface CreateItemData {
+  title: string;
+  description: string | null;
+  content: string | null;
+  url: string | null;
+  language: string | null;
+  tags: string[];
+  typeName: string;
+}
+
+export async function createItem(userId: string, data: CreateItemData): Promise<ItemDetail> {
+  const itemType = await prisma.itemType.findFirstOrThrow({
+    where: { name: { equals: data.typeName, mode: 'insensitive' } },
+  });
+
+  const contentTypeMap: Record<string, ContentType> = {
+    snippet: 'TEXT',
+    prompt: 'TEXT',
+    command: 'TEXT',
+    note: 'TEXT',
+    link: 'URL',
+    file: 'FILE',
+    image: 'FILE',
+  };
+
+  return prisma.item.create({
+    data: {
+      title: data.title,
+      description: data.description,
+      content: data.content,
+      url: data.url,
+      language: data.language,
+      contentType: contentTypeMap[data.typeName.toLowerCase()] ?? 'TEXT',
+      userId,
+      itemTypeId: itemType.id,
+      tags: {
+        connectOrCreate: data.tags.map((name) => ({
+          where: { name },
+          create: { name },
+        })),
+      },
+    },
+    include: {
+      itemType: { select: { name: true, icon: true, color: true } },
+      tags: { select: { name: true } },
+      collections: { select: { collection: { select: { id: true, name: true } } } },
+    },
+  });
+}
+
