@@ -24,7 +24,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ITEM_TYPES, getItemTypeIcon } from '@/lib/constants/item-types';
 import { deleteItem } from '@/actions/items';
 import ItemDrawerEditForm from './ItemDrawerEditForm';
+import CodeEditor from './CodeEditor';
 import type { ItemDetail } from '@/lib/db/items';
+
+const CODE_EDITOR_TYPES = ['snippet', 'command'];
 
 interface ItemDrawerProps {
   itemId: string | null;
@@ -181,11 +184,30 @@ function DrawerContent({
 }
 
 function ViewContent({ item }: { item: ItemDetail }) {
+  const typeName = item.itemType.name.toLowerCase();
+  const isCodeType = CODE_EDITOR_TYPES.includes(typeName);
+
   return (
     <div className="px-5 py-4 space-y-5 flex-1">
       {item.description && (
         <Section label="Description">
           <p className="text-sm text-muted-foreground">{item.description}</p>
+        </Section>
+      )}
+
+      {item.content && isCodeType && (
+        <Section label="Content">
+          <CodeEditor
+            value={item.content}
+            language={item.language ?? 'plaintext'}
+            readonly
+          />
+        </Section>
+      )}
+
+      {item.content && !isCodeType && (
+        <Section label="Content">
+          <pre className="text-sm text-muted-foreground whitespace-pre-wrap font-sans">{item.content}</pre>
         </Section>
       )}
 
