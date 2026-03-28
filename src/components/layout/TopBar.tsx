@@ -1,8 +1,9 @@
 'use client';
 
-import { Search, Plus, FolderPlus, PanelLeft } from 'lucide-react';
+import { Search, FolderPlus, PanelLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import CreateItemDialog from '@/components/items/CreateItemDialog';
 
 interface TopBarProps {
   onMenuClick: () => void;
@@ -58,10 +59,7 @@ export default function TopBar({ onMenuClick, onCollapseClick }: TopBarProps) {
           <FolderPlus className="size-4" />
           <span className="hidden lg:inline">New Collection</span>
         </Button>
-        <Button size="sm" className="gap-1">
-          <Plus className="size-4" />
-          <span className="hidden sm:inline">New Item</span>
-        </Button>
+        <CreateItemDialog />
       </div>
     </header>
   );
