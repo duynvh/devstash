@@ -1,16 +1,26 @@
-# Current Feature
+# Current Feature: Markdown Editor
 
-## Status
+### Status
 
-Not Started
+Complete
 
 ## Goals
 
-<!-- List bullet points of what success looks like -->
+- Create `MarkdownEditor` component with Write/Preview tabbed interface
+- Replace `Textarea` with `MarkdownEditor` for **note** and **prompt** types only (no changes to snippet/command)
+- Support both **readonly** mode (Preview tab only) and **edit** mode (Write tab default + Preview tab)
+- Use `react-markdown` with `remark-gfm` for GitHub Flavored Markdown rendering
+- Add copy button in header, matching `CodeEditor` style
+- Apply consistent dark theme (`bg-[#1e1e1e]` container, `bg-[#2d2d2d]` header)
+- Fluid height with max 400px, matching `CodeEditor` behavior
+- Integrate into `NewItemDialog`, `ItemDrawer` edit mode, and `ItemDrawer` view mode for note/prompt types
 
 ## Notes
 
-<!-- Additional context, constraints, or details from spec -->
+- Keep `CodeEditor` (Monaco) for snippet and command types — no changes there
+- Use a custom CSS class (`.markdown-preview`) for reliable dark mode styling of rendered markdown
+- Styled markdown elements required: headings (h1–h6), code blocks, inline code, lists, blockquotes, links, tables
+- Integration points: `NewItemDialog` content field, `ItemDrawerEditForm` content field, `ItemDrawer` view content field
 
 
 ## History
@@ -42,3 +52,4 @@ Not Started
 - Delete Item: shadcn AlertDialog confirmation triggered from Delete button in ItemDrawer; deleteItem server action in src/actions/items.ts (auth-guarded, { success, data, error } pattern); deleteItem DB query in src/lib/db/items.ts (userId-scoped Prisma delete); sonner toast on success/error; drawer closes + router.refresh() post-delete; shadcn alert-dialog component installed; 3 unit tests (auth guard, DB error, happy path)
 - Item Create: shadcn Dialog modal from "New Item" button in TopBar; type selector (snippet, prompt, command, note, link); dynamic fields per type (title/description/tags for all; content+language for snippet/command; content for prompt/note; URL for link); createItem server action with Zod validation and { success, data, error } pattern; createItem DB query in lib/db/items.ts with tag connect-or-create; shadcn Dialog + Select installed; sonner toast on success; modal closes + router.refresh() post-create
 - Code Editor: Monaco Editor (`@monaco-editor/react`) CodeEditor component for snippet and command types; macOS-style window dots (red/yellow/green) in editor header; copy button with clipboard toast + checkmark feedback; language label in header; readonly and edit modes; fluid height computed from line count (max 400px); custom dark theme with themed scrollbar; CDN loader to avoid Turbopack worker bundling issues; replaces textarea in ItemDrawer view, ItemDrawerEditForm, and CreateItemDialog for snippet/command only — note/prompt/link keep plain textarea
+- Markdown Editor: `react-markdown` + `remark-gfm` MarkdownEditor component for note and prompt types; Write/Preview tabbed interface; dark theme with `.markdown-preview` styling class matching core UI rules; copy button in header; fluid height computed from line count (max 400px); integration into CreateItemDialog, ItemDrawerEditForm, and ItemDrawer view (readonly mode); disabled Next.js Turbopack infinite refresh bug associated with pure ESM files using `transpilePackages` in next config

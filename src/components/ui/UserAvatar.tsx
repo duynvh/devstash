@@ -21,6 +21,7 @@ export default function UserAvatar({ name, image, size = 'md', className }: User
 
   if (image) {
     return (
+      /* eslint-disable-next-line @next/next/no-img-element */
       <img
         src={image}
         alt={name}

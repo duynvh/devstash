@@ -25,9 +25,11 @@ import { ITEM_TYPES, getItemTypeIcon } from '@/lib/constants/item-types';
 import { deleteItem } from '@/actions/items';
 import ItemDrawerEditForm from './ItemDrawerEditForm';
 import CodeEditor from './CodeEditor';
+import MarkdownEditor from './MarkdownEditor';
 import type { ItemDetail } from '@/lib/db/items';
 
 const CODE_EDITOR_TYPES = ['snippet', 'command'];
+const MARKDOWN_TYPES = ['note', 'prompt'];
 
 interface ItemDrawerProps {
   itemId: string | null;
@@ -205,7 +207,13 @@ function ViewContent({ item }: { item: ItemDetail }) {
         </Section>
       )}
 
-      {item.content && !isCodeType && (
+      {item.content && MARKDOWN_TYPES.includes(typeName) && (
+        <Section label="Content">
+          <MarkdownEditor value={item.content} readonly />
+        </Section>
+      )}
+
+      {item.content && !isCodeType && !MARKDOWN_TYPES.includes(typeName) && (
         <Section label="Content">
           <pre className="text-sm text-muted-foreground whitespace-pre-wrap font-sans">{item.content}</pre>
         </Section>

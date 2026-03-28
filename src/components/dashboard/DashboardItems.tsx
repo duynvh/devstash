@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Pin } from 'lucide-react';
 import ItemRow from './ItemRow';
 import ItemDrawer from '@/components/items/ItemDrawer';
@@ -33,9 +34,9 @@ export default function DashboardItems({ pinnedItems, recentItems }: DashboardIt
       <section>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-medium text-foreground">Recent Items</h2>
-          <a href="/items" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+          <Link href="/items" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
             View all
-          </a>
+          </Link>
         </div>
         <div className="rounded-lg border border-border divide-y divide-border overflow-hidden">
           {recentItems.map((item) => (

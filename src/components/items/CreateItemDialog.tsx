@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { createItem } from '@/actions/items';
 import CodeEditor from './CodeEditor';
+import MarkdownEditor from './MarkdownEditor';
 
 const TYPES = [
   { value: 'snippet', label: 'Snippet' },
@@ -21,6 +22,7 @@ type TypeValue = (typeof TYPES)[number]['value'];
 
 const CONTENT_TYPES: TypeValue[] = ['snippet', 'prompt', 'command', 'note'];
 const CODE_EDITOR_TYPES: TypeValue[] = ['snippet', 'command'];
+const MARKDOWN_EDITOR_TYPES: TypeValue[] = ['note', 'prompt'];
 
 export default function CreateItemDialog() {
   const router = useRouter();
@@ -130,6 +132,12 @@ export default function CreateItemDialog() {
                     value={content}
                     onChange={setContent}
                     language={language || 'plaintext'}
+                  />
+                ) : MARKDOWN_EDITOR_TYPES.includes(typeName) ? (
+                  <MarkdownEditor
+                    value={content}
+                    onChange={setContent}
+                    placeholder="Write markdown…"
                   />
                 ) : (
                   <textarea

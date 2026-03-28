@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { updateItem } from '@/actions/items';
 import CodeEditor from './CodeEditor';
+import MarkdownEditor from './MarkdownEditor';
 import type { ItemDetail } from '@/lib/db/items';
 
 const CONTENT_TYPES = ['snippet', 'prompt', 'command', 'note'];
 const CODE_EDITOR_TYPES = ['snippet', 'command'];
+const MARKDOWN_EDITOR_TYPES = ['note', 'prompt'];
 const URL_TYPES = ['link'];
 
 interface Props {
@@ -84,6 +86,12 @@ export default function ItemDrawerEditForm({ item, onCancel, onSaved }: Props) {
               value={content}
               onChange={setContent}
               language={language || 'plaintext'}
+            />
+          ) : MARKDOWN_EDITOR_TYPES.includes(typeName) ? (
+            <MarkdownEditor
+              value={content}
+              onChange={setContent}
+              placeholder="Write markdown…"
             />
           ) : (
             <textarea
